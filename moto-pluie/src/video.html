@@ -22,7 +22,7 @@
 </div>
 <script>
 'use strict';
-const W = 1080, H = 1920, FPS = 30, DURATION = 64;
+const W = 1080, H = 1920, FPS = 30, DURATION = 69;
 const cv = document.getElementById('c');
 const ctx = cv.getContext('2d');
 
@@ -303,6 +303,7 @@ const SUBS = [
   [32, 41, ['وبالموطور، فالدوران،', 'الرويضة خاصها تشدّ وانت مايل.', 'نفس السرعة اللي دازت فالناشف،', 'تقدر ما تبقاش مناسبة دابا.']],
   [41, 51, ['نقص السرعة قبل الدوران،', 'فراني وتسارع تدريجياً،', 'وزيد المسافة.', 'ورد بالك من الصباغة', 'والقوادس المبلّلين.']],
   [51, 59, ['راقب الرويضات', 'وضبط الضغط حسب توصية المصنع.', 'ما تستناش الطريق تغرق…', 'بدّل السياقة من أول قطرات.']],
+  [59.4, 64, ['صيفط هاد الفيديو لصاحبك مول الموطور…', 'باش يوصل حتى هو سالم.']],
 ];
 // répartition proportionnelle au nombre de caractères
 const CUES = [];
@@ -327,7 +328,7 @@ function subtitles(t) {
 }
 
 // ---------- éléments permanents ----------
-const SEG = [0, 6, 14, 24, 32, 41, 51, 59];
+const SEG = [0, 6, 14, 24, 32, 41, 51, 59, 64];
 function progressBar(t) {
   const y = 64, x0 = 48, x1 = W - 48, gap = 10, n = SEG.length - 1;
   const segW = (x1 - x0 - gap * (n - 1)) / n;
@@ -741,6 +742,65 @@ function scene7(lt) {
   }
 }
 
+// CTA — partager avec un ami motard
+function sendIcon(cx, cy, r, alpha = 1, fly = 0) {
+  ctx.save(); ctx.globalAlpha *= alpha;
+  // le bouton disparaît pendant que l'avion part
+  const br = r * (1 - easeIn(clamp(fly * 1.6)));
+  if (br > 0) { ctx.beginPath(); ctx.arc(cx, cy, br, 0, 7); ctx.fillStyle = AMBER; ctx.fill(); }
+  // avion en papier
+  const k = easeIn(fly);
+  ctx.translate(cx + k * 520, cy - k * 700); ctx.rotate(-.35 - k * .3); ctx.scale(r / 60, r / 60);
+  ctx.globalAlpha *= 1 - clamp((fly - .7) / .3);
+  ctx.fillStyle = INK; ctx.beginPath();
+  ctx.moveTo(-34, -4); ctx.lineTo(38, -30); ctx.lineTo(14, 34); ctx.lineTo(4, 8); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.moveTo(4, 8); ctx.lineTo(38, -30); ctx.lineTo(10, 22); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function sceneCTA(lt) {
+  const z = lerp(1.12, 1.0, easeOut(prog(lt, 0, 5)));
+  cover(IMG.P05, 0, 0, W, H, z, .5, .5, 'blur(5px) contrast(1.1) saturate(.8) brightness(.45)');
+  ctx.fillStyle = 'rgba(8,16,22,.35)'; ctx.fillRect(0, 0, W, H);
+  rain(lt + 30, .5); gradBand(0, 700, .8, 0);
+  const a = easeOut(prog(lt, .1, .5));
+  txt('صيفط هاد الفيديو', W / 2, 300 - (1 - a) * 40, 120, { alpha: a });
+  const b = prog(lt, .5, .9);
+  pill('لصاحبك مول الموطور', W / 2, 470, 88, { bg: AMBER, color: INK, alpha: b, scale: backOut(b), skew: -.08 });
+  // bulle de message avec miniature
+  const c = easeOut(prog(lt, 1.0, 1.5));
+  const bx = 120, by = 640 + (1 - c) * 80, bw = 840, bh = 600;
+  if (c > 0) {
+    ctx.save(); ctx.globalAlpha = c;
+    ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 18;
+    rrect(bx, by, bw, bh, 36); ctx.fillStyle = '#1E5B47'; ctx.fill(); ctx.shadowColor = 'transparent';
+    // pointe de la bulle
+    ctx.beginPath(); ctx.moveTo(bx + bw - 30, by + bh - 4); ctx.lineTo(bx + bw + 34, by + bh + 26); ctx.lineTo(bx + bw - 90, by + bh - 4); ctx.closePath(); ctx.fill();
+    // miniature de la vidéo
+    ctx.save(); rrect(bx + 24, by + 24, bw - 48, 380, 24); ctx.clip();
+    cover(IMG.P01, bx + 24, by + 24, bw - 48, 380, 1.1, .5, .45, 'brightness(.7) contrast(1.1)');
+    ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(bx + 24, by + 24, bw - 48, 380);
+    ctx.restore();
+    txt('أول قطرات', W / 2, by + 170, 90, { alpha: 1 });
+    // bouton lecture
+    ctx.beginPath(); ctx.arc(W / 2, by + 290, 46, 0, 7); ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.fill();
+    ctx.fillStyle = INK; ctx.beginPath(); ctx.moveTo(W / 2 - 14, by + 266); ctx.lineTo(W / 2 + 24, by + 290); ctx.lineTo(W / 2 - 14, by + 314); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    txt('خويا، شوف هادي قبل ما تخرج فالشتا', bx + bw - 40, by + 470, 46, { fam: 'Cairo', weight: 600, align: 'right', alpha: c * prog(lt, 1.4, 1.8), shadow: false, maxW: bw - 80 });
+    // accusés de lecture
+    const tk = prog(lt, 2.6, 2.9);
+    ctx.save(); ctx.globalAlpha = c * tk; ctx.strokeStyle = '#53BDEB'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (const o of [0, 18]) { ctx.beginPath(); ctx.moveTo(bx + 50 + o, by + 550); ctx.lineTo(bx + 62 + o, by + 562); ctx.lineTo(bx + 86 + o, by + 534); ctx.stroke(); }
+    ctx.restore();
+  }
+  // bouton envoyer + avion qui part
+  const s = prog(lt, 1.6, 1.9);
+  const pulse = lt < 2.2 ? 1 + Math.sin(lt * 14) * .06 * s : 1;
+  sendIcon(W - 150, 1330, 70 * backOut(s) * pulse, s, prog(lt, 2.2, 3.0));
+  const d = prog(lt, 2.9, 3.3);
+  txt('باش يوصل حتى هو سالم', W / 2, 1335, 62, { fam: 'Cairo', alpha: d, color: CREAM });
+  pill('ولا دير ليه منشن فالتعليقات', W / 2, 1480, 42, { bg: 'rgba(0,0,0,.6)', color: WHITE, fam: 'Cairo', weight: 600, alpha: prog(lt, 3.4, 3.8), r: 16 });
+}
+
 // Fin — rappel + crédits (obligatoires pour CC BY / BY-SA)
 function sceneOutro(lt) {
   ctx.save(); ctx.fillStyle = ctx.createPattern(ZEL_DARK, 'repeat'); ctx.translate(-lt * 8, 0); ctx.fillRect(-100, -100, W + 200, H + 200); ctx.restore();
@@ -772,7 +832,8 @@ const SCENES = [
   { a: 32, b: 41, f: scene5, illus: false },
   { a: 41, b: 51, f: scene6, illus: false },
   { a: 51, b: 59, f: scene7, illus: false },
-  { a: 59, b: 64, f: sceneOutro, illus: false },
+  { a: 59, b: 64, f: sceneCTA, illus: false },
+  { a: 64, b: 69, f: sceneOutro, illus: false },
 ];
 const TR = .45; // durée transition étoile
 
@@ -797,7 +858,7 @@ function render(t) {
     starPath(ctx, W / 2, H / 2, R, R * .78, 8, p * .6); ctx.lineWidth = 14; ctx.strokeStyle = AMBER; ctx.stroke(); ctx.restore();
   }
   vignette(.55);
-  if (t < 59) { progressBar(t); brandMark(); subtitles(t); }
+  if (t < 64) { progressBar(t); brandMark(); subtitles(t); }
   grain(t);
   // fondu d'entrée / sortie
   if (t < .25) { ctx.fillStyle = `rgba(0,0,0,${1 - t / .25})`; ctx.fillRect(0, 0, W, H); }

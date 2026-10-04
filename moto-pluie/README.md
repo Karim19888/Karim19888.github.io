@@ -1,6 +1,6 @@
 # الموطور وأول قطرات الشتا — vidéo verticale 9:16
 
-Vidéo de 64 s (59 s de contenu + 5 s de crédits), 1080×1920, 30 i/s, faite pour Reels, TikTok et Shorts.
+Vidéo de 69 s (59 s de contenu, 5 s de CTA de partage et 5 s de crédits), 1080×1920, 30 i/s, faite pour Reels, TikTok et Shorts.
 
 ## Fichiers
 
@@ -8,7 +8,9 @@ Vidéo de 64 s (59 s de contenu + 5 s de crédits), 1080×1920, 30 i/s, faite po
 |---|---|
 | `moto_premiere_pluie_9x16.mp4` | La vidéo finale : graphismes, sous-titres darija incrustés et musique sans voix |
 | `musique_sans_voix.wav` | La bande-son seule, pour mixer une voix off par-dessus |
-| `SOUS_TITRES_DARIJA_V2.srt` | Les sous-titres redécoupés et calés sur la vidéo |
+| `SOUS_TITRES_DARIJA_V2.srt` | Les sous-titres redécoupés et calés sur la vidéo, CTA compris |
+| `VOIX_OFF_ELEVENLABS_V4.txt` | Le script à coller dans ElevenLabs v4, avec les balises de jeu et le CTA |
+| `VOIX_OFF_ELEVENLABS_V4.md` | Les réglages, le calage bloc par bloc et les corrections de prononciation |
 | `src/video.html` | Le moteur d'animation (canvas). Ouvrir `src/video.html?play` dans un serveur local pour une lecture en direct, ou `?t=12.5` pour voir une image fixe |
 | `src/render.mjs` | Rendu image par image avec Playwright et ffmpeg |
 | `src/audio.py` | La bande-son synthétisée (pluie, nappe, pulsation et impacts aux transitions) |
@@ -23,11 +25,12 @@ Vidéo de 64 s (59 s de contenu + 5 s de crédits), 1080×1920, 30 i/s, faite po
 - **Graphismes explicatifs** : zone de contact du pneu, jauge d'adhérence, schéma d'un virage avec la zone où ralentir, cartes de gestes, cercles autour des marquages et des plaques, manomètre.
 - **Aucun chiffre inventé** : la jauge d'adhérence et le manomètre n'ont pas de graduations chiffrées. Le manomètre renvoie à « توصية المصنع » et ajoute « قيس الضغط والرويضات باردين » (pression à froid, source S03).
 - **Honnêteté des images** : l'étiquette « صور توضيحية » reste affichée sur chaque photo. La carte finale précise que les photos ne sont pas prises au Maroc ou que le lieu n'est pas confirmé.
+- **CTA de partage (59–64 s)** : « صيفط هاد الفيديو لصاحبك مول الموطور… باش يوصل حتى هو سالم ». À l'écran : une bulle de message avec la miniature de la vidéo, un avion en papier qui part et « ولا دير ليه منشن فالتعليقات ». Le fond P05 montre deux motards, ce qui rappelle l'idée de l'ami.
 - **Crédits et licences** : auteurs et licences des 6 photos en fin de vidéo, avec la mention « Photos recadrées, étalonnées et annotées » qu'exigent les licences CC BY et CC BY-SA. Les photos P01, P03 et P04 sont en CC BY-SA : la vidéo qui les modifie doit donc être partagée sous **CC BY-SA**.
 
 ## Ajouter la voix
 
-1. Enregistrer `montage/SCRIPT_DARIJA_60S.txt`, qui dure environ 59 s.
+1. Générer `VOIX_OFF_ELEVENLABS_V4.txt` dans ElevenLabs v4 (voir `VOIX_OFF_ELEVENLABS_V4.md`), pour environ 63 s.
 2. Dans CapCut ou Premiere : placer la vidéo, ajouter la voix et baisser la musique d'environ 6 dB sous la voix (ducking).
 3. Si la lecture est plus lente ou plus rapide, modifier les temps de `SUBS` dans `src/video.html` puis relancer le rendu :
 

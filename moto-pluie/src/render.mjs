@@ -15,7 +15,7 @@ if (mode === 'stills') {
   fs.mkdirSync(path.join(root, '../stills'), { recursive: true });
   for (const t of arg.split(',')) { await page.evaluate(t => render(t), parseFloat(t)); const b64 = await page.evaluate(() => document.getElementById('c').toDataURL('image/jpeg', .85).split(',')[1]); fs.writeFileSync(path.join(root, `../stills/t${t}.jpg`), Buffer.from(b64, 'base64')); }
 } else {
-  const fps = parseInt(fpsArg || '30'), dur = 64;
+  const fps = parseInt(fpsArg || '30'), dur = await page.evaluate(() => DURATION);
   const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p', arg], { stdio: ['pipe', 'inherit', 'inherit'] });
   const n = dur * fps;
   for (let i = 0; i < n; i++) {
