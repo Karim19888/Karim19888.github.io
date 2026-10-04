@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>مرحبا بيك… حتى بالدرهم</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<style>
+  :root{
+    --ink:#14163A; --night:#0D0E26; --cream:#F6EEDF; --paper:#EFE3CC;
+    --terra:#C4552D; --saffron:#E8A93A; --green:#1E6B4E; --majorelle:#3D4FD1; --rose:#E9B9A4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:var(--ink)}
+  body{font-family:'Cairo',sans-serif;color:var(--cream);position:relative}
+  .abs{position:absolute}
+  .scene{position:absolute;inset:0;opacity:0;overflow:hidden}
+  .kufi{font-family:'Reem Kufi',sans-serif}
+  .ruqaa{font-family:'Aref Ruqaa',serif}
+  .ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+  .pattern{position:absolute;inset:-200px;background-size:180px 180px;opacity:.10}
+
+  /* header */
+  #header{position:absolute;top:0;left:0;right:0;height:190px;z-index:50}
+  #brand{position:absolute;right:60px;top:70px;display:flex;align-items:center;gap:18px;font-size:38px;font-weight:700}
+  #brand svg{width:46px;height:46px}
+  #counter{position:absolute;left:60px;top:74px;font-size:34px;font-weight:600;letter-spacing:2px}
+  #progress{position:absolute;left:60px;right:60px;top:150px;height:6px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+  #progress i{position:absolute;right:0;top:0;bottom:0;background:var(--saffron);border-radius:3px}
+
+  /* captions */
+  #caption{position:absolute;left:60px;right:60px;top:1500px;min-height:230px;z-index:40;display:flex;align-items:center;justify-content:center}
+  #capcard{background:rgba(13,14,38,.92);border-right:10px solid var(--saffron);border-radius:28px;padding:30px 44px;
+    font-size:52px;font-weight:700;line-height:1.55;text-align:center;color:var(--cream);box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:960px}
+  #capcard span{display:inline-block;margin:0 6px}
+
+  #footer{position:absolute;left:60px;right:60px;bottom:70px;height:60px;z-index:45;font-size:28px;font-weight:600;text-align:center;display:flex;align-items:center;justify-content:center}
+  .chip{display:inline-flex;align-items:center;gap:14px;padding:10px 26px;border-radius:40px;font-size:28px;font-weight:600}
+
+  /* arch */
+  .arch{position:absolute;clip-path:url(#archClip);overflow:hidden}
+  .arch img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:50% 50%}
+  .archline{position:absolute;overflow:visible}
+
+  /* wipe */
+  #wipe{position:absolute;top:0;bottom:0;width:1500px;left:-210px;z-index:80;background:var(--terra);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  #wipe .pattern{opacity:.22}
+
+  .label{position:absolute;font-size:26px;font-weight:600;padding:8px 22px;border-radius:30px;background:rgba(13,14,38,.75);color:var(--cream)}
+
+  /* S0 */
+  .tag{position:absolute;width:190px;height:250px;transform-origin:50% 0}
+  .tag .body{position:absolute;inset:40px 0 0 0;border-radius:18px 18px 26px 26px;display:flex;align-items:center;justify-content:center;font-size:86px;font-weight:900;color:var(--cream);box-shadow:0 18px 40px rgba(0,0,0,.35)}
+  .tag .hole{position:absolute;top:58px;left:50%;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:var(--ink);z-index:2}
+  .tag .string{position:absolute;top:0;left:50%;width:4px;height:70px;margin-left:-2px;background:var(--saffron)}
+
+  /* cards */
+  .card{position:absolute;border-radius:36px;padding:44px 50px;box-shadow:0 30px 70px rgba(20,22,58,.25)}
+  .clip{position:absolute;background:#FBF7EE;color:#1a1a1a;border-radius:10px;padding:46px 54px 40px;box-shadow:0 26px 60px rgba(0,0,0,.28)}
+  .clip .src{font-size:28px;font-weight:600;color:#6b5e4b;margin-top:26px;display:flex;justify-content:space-between;direction:ltr}
+  .clip h3{font-size:56px;line-height:1.45;font-weight:800}
+  .clip .note{font-size:24px;color:#8c7e68;margin-top:10px}
+  .clip .bar{position:absolute;top:0;right:0;left:0;height:14px;border-radius:10px 10px 0 0}
+  mark{background:none;color:inherit;position:relative;z-index:0}
+  mark i{position:absolute;right:-6px;top:58%;height:42%;background:var(--saffron);z-index:-1;border-radius:4px}
+
+  .xchip{position:absolute;right:50%;transform-origin:50% 50%;padding:18px 40px;border-radius:24px;background:#fff;color:var(--ink);font-size:52px;font-weight:800;white-space:nowrap}
+  .xchip .strike{position:absolute;right:20px;top:52%;height:8px;background:var(--terra);border-radius:4px}
+  .check{position:absolute;right:90px;left:90px;height:170px;border-radius:30px;display:flex;align-items:center;gap:34px;padding:0 50px;font-size:70px;font-weight:900}
+  .check .ic{width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+
+  .eq{position:absolute;width:210px;height:250px;border-radius:30px;background:var(--cream);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:40px;font-weight:800;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .eq svg{width:110px;height:110px}
+  .plus{position:absolute;font-size:80px;font-weight:900;color:var(--saffron);width:60px;text-align:center}
+
+  .pillar{position:absolute;right:50%;padding:20px 46px;border-radius:999px;font-size:50px;font-weight:800;white-space:nowrap;display:flex;align-items:center;gap:20px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <clipPath id="archClip" clipPathUnits="objectBoundingBox">
+      <path d="M0,1 L0,0.36 C0,0.16 0.24,0.035 0.5,0 C0.76,0.035 1,0.16 1,0.36 L1,1 Z"/>
+    </clipPath>
+  </defs>
+</svg>
+
+<!-- ============ S0 HOOK ============ -->
+<section class="scene" id="s0" style="background:var(--ink)">
+  <div class="pattern" data-pat="cream"></div>
+  <div class="arch" id="s0arch" style="left:160px;top:250px;width:760px;height:1150px">
+    <img src="assets/img/P04.jpg" id="s0img" style="filter:blur(7px) saturate(.55) brightness(.75)">
+    <div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(20,22,58,.15),rgba(20,22,58,.85));mix-blend-mode:multiply"></div>
+  </div>
+  <svg class="archline" id="s0line" style="left:160px;top:250px;width:760px;height:1150px" viewBox="0 0 1 1" preserveAspectRatio="none">
+    <path d="M0,1 L0,0.36 C0,0.16 0.24,0.035 0.5,0 C0.76,0.035 1,0.16 1,0.36 L1,1" fill="none" stroke="#E8A93A" stroke-width="6" vector-effect="non-scaling-stroke" pathLength="1" stroke-dasharray="1" id="s0path"/>
+  </svg>
+  <div class="label" id="s0label" style="left:200px;top:1330px">صورة توضيحية · أرشيف 2023</div>
+  <div class="abs kufi" id="s0t1" style="left:0;right:0;top:620px;text-align:center;font-size:140px;font-weight:700;text-shadow:0 10px 40px rgba(0,0,0,.5)">نفس الفندق…</div>
+  <div class="abs" id="s0t2" style="left:0;right:0;top:820px;text-align:center">
+    <span style="display:inline-block;background:var(--saffron);color:var(--ink);font-size:110px;font-weight:900;padding:0 46px;border-radius:24px" id="s0t2in">ثمن مختلف</span>
+  </div>
+  <div class="tag" id="tagA" style="left:250px;top:1030px"><div class="string"></div><div class="body" style="background:var(--majorelle)"><span class="ltr">€</span></div><div class="hole"></div></div>
+  <div class="tag" id="tagB" style="left:640px;top:1030px"><div class="string"></div><div class="body" style="background:var(--green);font-size:60px">درهم</div><div class="hole"></div></div>
+</section>
+
+<!-- ============ S1 ============ -->
+<section class="scene" id="s1" style="background:var(--cream);color:var(--ink)">
+  <div class="pattern" data-pat="ink"></div>
+  <div class="abs kufi" id="s1t1" style="right:80px;top:250px;font-size:96px;font-weight:700;color:var(--ink)">التخفيض حاجة…</div>
+  <div class="abs kufi" id="s1t2" style="right:80px;top:380px;font-size:96px;font-weight:700;color:var(--terra)">المعاملة حاجة أخرى</div>
+  <div class="card" id="s1c1" style="right:80px;left:80px;top:560px;height:330px;background:var(--ink);color:var(--cream);display:flex;align-items:center;gap:44px">
+    <svg viewBox="0 0 120 120" style="width:170px;height:170px;flex:none" fill="none" stroke="#E8A93A" stroke-width="6" stroke-linejoin="round">
+      <rect x="30" y="16" width="70" height="46" rx="8" opacity=".45"/><rect x="22" y="34" width="70" height="46" rx="8" opacity=".7" fill="#14163A"/><rect x="14" y="52" width="70" height="46" rx="8" fill="#14163A"/>
+      <path d="M26 70h40M26 84h26"/>
+    </svg>
+    <div><div style="font-size:66px;font-weight:900">التخفيض</div><div style="font-size:40px;font-weight:600;opacity:.85">حجوزات بالجملة عند وكالات الأسفار</div></div>
+  </div>
+  <div class="abs" id="s1neq" style="left:0;right:0;top:880px;text-align:center;font-size:150px;font-weight:900;color:var(--terra);line-height:1">≠</div>
+  <div class="card" id="s1c2" style="right:80px;left:80px;top:1040px;height:330px;background:var(--terra);color:var(--cream);display:flex;align-items:center;gap:44px">
+    <svg viewBox="0 0 120 120" style="width:170px;height:170px;flex:none" fill="none" stroke="#F6EEDF" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M60 96 C20 70 14 48 26 34 C38 20 54 28 60 40 C66 28 82 20 94 34 C106 48 100 70 60 96Z"/>
+    </svg>
+    <div><div style="font-size:66px;font-weight:900">المعاملة</div><div style="font-size:40px;font-weight:600;opacity:.9">ترحيب، خدمة واحترام</div></div>
+  </div>
+</section>
+
+<!-- ============ S2 ============ -->
+<section class="scene" id="s2" style="background:#E7D9BE;color:var(--ink)">
+  <div class="pattern" data-pat="ink"></div>
+  <div class="abs kufi" id="s2t" style="left:0;right:0;top:250px;text-align:center;font-size:74px;font-weight:700">شكايات وتصريحات منشورة <span style="color:var(--terra)">— 2025</span></div>
+  <div class="clip" id="s2a" style="right:90px;left:110px;top:430px">
+    <div class="bar" style="background:var(--majorelle)"></div>
+    <h3>شكايات على تفضيل الأجانب <mark><i id="s2hl"></i>عند بعض الفنادق</mark></h3>
+    <div class="src"><span>Hespress EN · 02/06/2025</span><span>S02</span></div>
+    <div class="note">ملخّص للعنوان — ماشي لقطة شاشة</div>
+  </div>
+  <div class="clip" id="s2b" style="right:110px;left:90px;top:870px">
+    <div class="bar" style="background:var(--terra)"></div>
+    <h3>فعاليات مغربية تدعو إلى الكفّ عن التمييز بين <mark><i id="s2hl2"></i>السائح المحلي والأجنبي</mark></h3>
+    <div class="src"><span>Hespress · 18/08/2025</span><span>S01</span></div>
+    <div class="note">نص العنوان منقول — ماشي لقطة شاشة</div>
+  </div>
+  <div class="abs" id="s2stamp" style="left:70px;top:1250px;width:210px;height:210px;border:8px solid var(--terra);border-radius:50%;color:var(--terra);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900">
+    <div style="font-size:30px">منشور</div><div style="font-size:64px;line-height:1">2025</div>
+  </div>
+</section>
+
+<!-- ============ S3 ============ -->
+<section class="scene" id="s3" style="background:var(--cream);color:var(--ink)">
+  <div class="pattern" data-pat="ink"></div>
+  <div class="abs kufi" id="s3k" style="left:0;right:0;top:250px;text-align:center;font-size:62px;font-weight:700">الزبون المغربي جاي يخلص ويرتاح</div>
+  <div class="abs" id="s3tagx" style="left:0;right:0;top:360px;text-align:center;font-size:28px;font-weight:600;color:#8c7e68">أمثلة توضيحية</div>
+  <div class="xchip" id="x1" style="top:470px">ترحيب بارد<i class="strike"></i></div>
+  <div class="xchip" id="x2" style="top:620px">خدمة ناقصة<i class="strike"></i></div>
+  <div class="xchip" id="x3" style="top:770px">مصاريف مفاجئة<i class="strike"></i></div>
+  <div class="check" id="ck1" style="top:1000px;background:var(--green);color:var(--cream)"><div class="ic" style="background:var(--cream)"><svg viewBox="0 0 40 40" width="56" height="56" fill="none" stroke="#1E6B4E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21 l8 8 L32 11"/></svg></div>الثمن واضح</div>
+  <div class="check" id="ck2" style="top:1200px;background:var(--ink);color:var(--cream)"><div class="ic" style="background:var(--saffron)"><svg viewBox="0 0 40 40" width="56" height="56" fill="none" stroke="#14163A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21 l8 8 L32 11"/></svg></div>الخدمة محترمة</div>
+</section>
+
+<!-- ============ S4 ============ -->
+<section class="scene" id="s4" style="background:var(--ink)">
+  <div class="arch" id="s4arch" style="left:90px;top:240px;width:900px;height:1220px">
+    <img src="assets/img/P02.jpg" id="s4img" style="filter:sepia(.45) saturate(1.5) hue-rotate(-12deg) brightness(.95) contrast(1.05)">
+    <div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(232,169,58,.25),rgba(20,22,58,.0) 40%,rgba(20,22,58,.85))"></div>
+  </div>
+  <svg class="archline" style="left:90px;top:240px;width:900px;height:1220px" viewBox="0 0 1 1" preserveAspectRatio="none">
+    <path d="M0,1 L0,0.36 C0,0.16 0.24,0.035 0.5,0 C0.76,0.035 1,0.16 1,0.36 L1,1" fill="none" stroke="#E8A93A" stroke-width="5" vector-effect="non-scaling-stroke"/>
+  </svg>
+  <div class="label" id="s4label" style="left:130px;top:520px">أكادير · أرشيف 2015 · صورة توضيحية</div>
+  <div class="abs kufi" id="s4t" style="left:0;right:0;top:640px;text-align:center;font-size:74px;font-weight:700;text-shadow:0 6px 30px rgba(0,0,0,.6)">فاتورة العائلة</div>
+  <div id="eqrow">
+    <div class="eq" id="e1" style="right:60px;top:820px"><svg viewBox="0 0 64 64" fill="none" stroke="#14163A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M6 46V18M6 34h52v12M58 46V30a6 6 0 0 0-6-6H28v10"/><rect x="12" y="25" width="12" height="9" rx="4"/></svg>الفندق</div>
+    <div class="plus" id="p1" style="right:272px;top:880px">+</div>
+    <div class="eq" id="e2" style="right:332px;top:820px"><svg viewBox="0 0 64 64" fill="none" stroke="#14163A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M10 40l5-14a5 5 0 0 1 5-3h24a5 5 0 0 1 5 3l5 14v8H10z"/><circle cx="20" cy="48" r="5" fill="#F6EEDF"/><circle cx="44" cy="48" r="5" fill="#F6EEDF"/><path d="M14 36h36"/></svg>الطريق</div>
+    <div class="plus" id="p2" style="right:544px;top:880px">+</div>
+    <div class="eq" id="e3" style="right:604px;top:820px"><svg viewBox="0 0 64 64" fill="none" stroke="#14163A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M32 8v4M32 12c-10 8-16 18-18 30h36c-2-12-8-22-18-30z"/><path d="M6 42h52c0 6-6 10-12 10H18C12 52 6 48 6 42z"/></svg>الماكلة</div>
+    <div class="plus" id="p3" style="right:816px;top:880px">+</div>
+    <div class="eq" id="e4" style="right:60px;top:1100px;width:960px;height:180px;flex-direction:row;gap:30px;background:var(--saffron)"><svg viewBox="0 0 64 64" fill="none" stroke="#14163A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><circle cx="22" cy="16" r="7"/><circle cx="44" cy="22" r="6"/><path d="M12 56V36a10 10 0 0 1 20 0v20M36 56V40a8 8 0 0 1 16 0v16"/></svg>مصاريف الدراري</div>
+  </div>
+  <div class="abs" id="s4sum" style="left:60px;right:60px;top:1300px;height:110px;border-radius:24px;background:var(--cream);color:var(--ink);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900">
+    <i id="s4fill" class="abs" style="right:0;top:0;bottom:0;background:var(--green)"></i>
+    <span style="position:relative" id="s4sumtxt">= الميزانية كاملة</span>
+  </div>
+</section>
+
+<!-- ============ S5 ============ -->
+<section class="scene" id="s5" style="background:radial-gradient(1200px 1200px at 50% 45%,#262A6B,var(--night))">
+  <div class="pattern" data-pat="saffron"></div>
+  <div class="abs kufi" id="s5k" style="left:0;right:0;top:250px;text-align:center;font-size:76px;font-weight:700">والمغربي عندو وزن</div>
+  <div class="abs" id="s5year" style="left:0;right:0;top:380px;text-align:center"><span class="chip" style="background:var(--saffron);color:var(--ink);font-size:40px;font-weight:900">2025</span></div>
+  <div class="abs" id="s5num" style="left:0;right:0;top:470px;text-align:center;font-size:250px;font-weight:900;line-height:1.1;color:var(--saffron)"><span class="ltr" id="s5val">+12.1</span></div>
+  <div class="abs" id="s5unit" style="left:0;right:0;top:760px;text-align:center;font-size:72px;font-weight:800">مليون ليلة مبيت</div>
+  <div class="abs" id="s5ring" style="left:340px;top:900px;width:400px;height:400px">
+    <svg viewBox="0 0 100 100" style="width:100%;height:100%;transform:rotate(-90deg) scaleY(-1)">
+      <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="11"/>
+      <circle id="s5arc" cx="50" cy="50" r="42" fill="none" stroke="#C4552D" stroke-width="11" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>
+    </svg>
+    <div class="abs" style="inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div style="font-size:36px;font-weight:700;opacity:.85">حوالي</div>
+      <div style="font-size:112px;font-weight:900;line-height:1"><span class="ltr" id="s5pct">28%</span></div>
+    </div>
+  </div>
+  <div class="abs" id="s5cap" style="left:0;right:0;top:1320px;text-align:center;font-size:40px;font-weight:700;opacity:.9">من ليالي المبيت السياحية · السياحة الداخلية</div>
+</section>
+
+<!-- ============ S6 ============ -->
+<section class="scene" id="s6" style="background:linear-gradient(180deg,#F3C677,#E28F4F 55%,#B9472A)">
+  <div class="pattern" data-pat="cream"></div>
+  <div class="arch" id="s6a" style="left:70px;top:250px;width:450px;height:700px"><img src="assets/img/P03.jpg" id="s6ia" style="filter:saturate(1.15)"></div>
+  <div class="arch" id="s6b" style="left:560px;top:250px;width:450px;height:700px"><img src="assets/img/P01.jpg" id="s6ib" style="filter:saturate(1.1) contrast(1.05)"></div>
+  <svg class="archline" id="s6la" style="left:70px;top:250px;width:450px;height:700px" viewBox="0 0 1 1" preserveAspectRatio="none"><path d="M0,1 L0,0.36 C0,0.16 0.24,0.035 0.5,0 C0.76,0.035 1,0.16 1,0.36 L1,1Z" fill="none" stroke="#F6EEDF" stroke-width="5" vector-effect="non-scaling-stroke"/></svg>
+  <svg class="archline" id="s6lb" style="left:560px;top:250px;width:450px;height:700px" viewBox="0 0 1 1" preserveAspectRatio="none"><path d="M0,1 L0,0.36 C0,0.16 0.24,0.035 0.5,0 C0.76,0.035 1,0.16 1,0.36 L1,1Z" fill="none" stroke="#F6EEDF" stroke-width="5" vector-effect="non-scaling-stroke"/></svg>
+  <div class="label" id="s6la1" style="left:95px;top:890px;font-size:22px">مراكش · أرشيف 2015</div>
+  <div class="label" id="s6lb1" style="left:585px;top:890px;font-size:22px">أكادير · أرشيف 2005</div>
+  <div class="pillar" id="pl1" style="top:1000px;background:var(--cream);color:var(--ink)">عروض واضحة</div>
+  <div class="pillar" id="pl2" style="top:1130px;background:var(--ink);color:var(--cream)">خدمة تستاهل الثمن</div>
+  <div class="pillar" id="pl3" style="top:1260px;background:var(--green);color:var(--cream)">نفس الاحترام للجميع</div>
+  <div class="abs" id="s6band" style="left:0;right:0;top:560px;height:860px;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden">
+    <div class="pattern" data-pat="saffron" style="opacity:.12"></div>
+    <svg id="s6star" viewBox="-50 -50 100 100" style="position:absolute;width:760px;height:760px;opacity:.16"><polygon class="star16" fill="#E8A93A"/></svg>
+    <div class="ruqaa" id="s6s1" style="position:relative;font-size:150px;color:var(--cream);line-height:1.3">مرحبا بيك…</div>
+    <div class="ruqaa" id="s6s2" style="position:relative;font-size:170px;color:var(--saffron);line-height:1.3">حتى بالدرهم</div>
+  </div>
+</section>
+
+<!-- ============ S7 CREDITS ============ -->
+<section class="scene" id="s7" style="background:var(--night);color:var(--cream)">
+  <div class="pattern" data-pat="saffron" style="opacity:.06"></div>
+  <div class="abs" id="s7in" style="left:90px;right:90px;top:260px">
+    <div class="kufi" style="font-size:64px;font-weight:700;color:var(--saffron);margin-bottom:30px">المصادر والصور</div>
+    <div style="font-size:34px;line-height:1.7;font-weight:600">
+      <div>• Hespress · 18/08/2025 (S01)</div>
+      <div>• Hespress EN · 02/06/2025 (S02)</div>
+      <div>• ONMT · 19/03/2026 (S03) — ليالي المبيت 2025</div>
+    </div>
+    <div style="height:2px;background:rgba(255,255,255,.2);margin:40px 0"></div>
+    <div style="direction:ltr;text-align:left;font-size:29px;line-height:1.65;font-weight:400;opacity:.92">
+      <div>Photos — Wikimedia Commons, images d’archive illustratives :</div>
+      <div>Chambre, Marrakech (2023) — Mike Peel · CC BY-SA 4.0</div>
+      <div>Plage d’Agadir (2015) — Yassine a t 10 · CC BY-SA 4.0</div>
+      <div>Piscine, Marrakech (2015) — Niels Elgaard Larsen · CC BY-SA 4.0</div>
+      <div>Hôtels, Agadir (2005) — Daniel*D · CC BY-SA 3.0</div>
+      <div style="margin-top:14px;opacity:.8">Images recadrées, floutées et retouchées en couleur. Aucun établissement visible n’est mis en cause. Logo ONMT : identification de la source uniquement, pas un partenariat.</div>
+    </div>
+  </div>
+  <div class="abs" style="left:0;right:0;top:1500px;text-align:center">
+    <div class="ruqaa" style="font-size:96px;color:var(--saffron)">مرحبا بيك… حتى بالدرهم</div>
+  </div>
+</section>
+
+<!-- persistent -->
+<div id="header">
+  <div id="brand"><svg viewBox="-50 -50 100 100"><polygon class="star16" fill="#E8A93A"/></svg><span class="kufi">مرحبا بيك… حتى بالدرهم</span></div>
+  <div id="counter" class="ltr">01 / 07</div>
+  <div id="progress"><i id="progbar"></i></div>
+</div>
+<div id="caption"><div id="capcard"></div></div>
+<div id="footer"><div class="chip" id="srcchip"></div></div>
+<div id="wipe"><div class="pattern" data-pat="cream"></div>
+  <svg viewBox="-50 -50 100 100" style="width:420px;height:420px;position:relative" id="wipestar"><polygon class="star16" fill="#E8A93A"/><polygon class="star16" fill="#C4552D" transform="scale(.62)"/><polygon class="star16" fill="#F6EEDF" transform="scale(.3)"/></svg>
+</div>
+
+<script>
+// ---------- geometry ----------
+function starPoints(R){const r=R*Math.cos(Math.PI/4)/Math.cos(Math.PI/8);let p=[];for(let i=0;i<16;i++){const a=i*Math.PI/8-Math.PI/2;const rr=i%2?r:R;p.push((rr*Math.cos(a)).toFixed(2)+','+(rr*Math.sin(a)).toFixed(2))}return p.join(' ')}
+document.querySelectorAll('.star16').forEach(e=>e.setAttribute('points',starPoints(48)));
+function patternURL(color){
+  const s=starPoints(30);
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><g fill='none' stroke='${color}' stroke-width='3'><polygon points='${s}' transform='translate(90 90)'/><polygon points='${starPoints(14)}' transform='translate(90 90)'/><polygon points='${s}' transform='translate(0 0)'/><polygon points='${s}' transform='translate(180 0)'/><polygon points='${s}' transform='translate(0 180)'/><polygon points='${s}' transform='translate(180 180)'/><path d='M90 0V40M90 140V180M0 90H40M140 90H180'/></g></svg>`;
+  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+}
+const PC={cream:'#F6EEDF',ink:'#14163A',saffron:'#E8A93A'};
+document.querySelectorAll('.pattern').forEach(e=>e.style.backgroundImage=patternURL(PC[e.dataset.pat]||'#F6EEDF'));
+
+// ---------- timeline ----------
+const SEG=[ // [start,end,sceneId,captionChunks,source]
+ [0,9,'s0',['نفس الفندق…','اللي جاي من أوروبا يقدر يحجز أرخص منك، ونتا ساكن فالمغرب.','والمفارقة ما كتوقفش فالثمن.'],''],
+ [9,19,'s1',['وكالات الأسفار كتفاوض على حجوزات بالجملة، وكتاخد تخفيضات.','هادي كتفسّر بعض الفروقات،','ولكن ما كتفسّرش فرق المعاملة.'],'المصدر: Hespress · 18/08/2025'],
+ [19,32,'s2',['جمعيات حماية المستهلك سبق نبهات لشكايات ديال مغاربة','على تفضيل الأجانب عند بعض الفنادق.','وحتى مهنيين فالقطاع أكدو أن هاد الممارسات موجودة عند البعض.'],'مصادر: Hespress EN · Hespress — 2025'],
+ [32,43,'s3',['الزبون المغربي جاي يخلص ويرتاح.','ترحيب بارد، خدمة ناقصة، ولا مصاريف كيتفاجأ بها…','هادو ماشي تفاصيل صغيرة فالعطلة.'],'رأي تحريري'],
+ [43,55,'s4',['وفاتورة العائلة فيها الفندق، الطريق، الماكلة ومصاريف الدراري.','عرض مناسب للعائلة خاصو يتحسب على هاد الميزانية كاملة.'],''],
+ [55,68,'s5',['والمغربي عندو وزن:','فـ2025، السياحة الداخلية مثّلات حوالي 28 فالمية من ليالي المبيت السياحية.','أكثر من 12 مليون ليلة.'],'ONMT'],
+ [68,80,'s6',['إلى بغينا المغربي يسافر فبلادو،','خاص عروض واضحة، خدمة تستاهل الثمن، ونفس الاحترام للجميع.','مرحبا بيك خاصها تخدم حتى بالدرهم.'],''],
+ [80,86,'s7',[],'']
+];
+const DURATION=86; window.DURATION=DURATION;
+// caption schedule
+const CAPS=[];
+SEG.forEach(([a,b,,chunks])=>{
+  if(!chunks.length)return;
+  const pad=.3, avail=(b-a)-pad*2; const tot=chunks.reduce((s,c)=>s+c.length+12,0);
+  let t=a+pad; chunks.forEach(c=>{const d=avail*(c.length+12)/tot;CAPS.push({a:t,b:t+d,text:c});t+=d;});
+});
+
+// ---------- helpers ----------
+const $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const P=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const lerp=(a,b,x)=>a+(b-a)*x;
+function S(el,{o=1,x=0,y=0,s=1,r=0,extra=''}={}){if(typeof el==='string')el=$(el);el.style.opacity=o;el.style.transform=`translate(${x}px,${y}px) scale(${s}) rotate(${r}deg) ${extra}`;}
+// standard entrance: from y offset, fade
+function enter(el,t,t0,dur=.6,dy=60,ease=eo){const p=ease(P(t,t0,t0+dur));S(el,{o:P(t,t0,t0+dur*.6),y:(1-p)*dy});return p}
+function pop(el,t,t0,dur=.5){const p=P(t,t0,t0+dur);S(el,{o:clamp(p*3),s:p>0?lerp(.6,1,eb(p)):.6});return p}
+
+// ---------- scene updaters (lt = local time) ----------
+const U={
+ s0(t){
+  const kb=P(t,0,9); $('s0img').style.transform=`scale(${1.15+kb*.12}) translateX(${-kb*20}px)`;
+  $('s0path').style.strokeDashoffset=1-eio(P(t,0,1.4));
+  S('s0arch',{o:P(t,0,.6),s:lerp(1.04,1,eo(P(t,0,1.2)))});
+  S('s0label',{o:P(t,1.2,1.8)});
+  const p1=eo(P(t,.4,1.1)); S('s0t1',{o:P(t,.4,.9),y:(1-p1)*50,s:lerp(1.15,1,p1)});
+  const p2=P(t,2.6,3.2); S('s0t2',{o:clamp(p2*3),s:p2>0?lerp(.5,1,eb(p2)):.5,r:lerp(-6,-2,eo(p2))});
+  // swinging tags
+  [['tagA',3.4,1],['tagB',3.7,-1]].forEach(([id,t0,dir])=>{
+    const lt=t-t0; const drop=eo(P(t,t0,t0+.5));
+    const sw=lt>0?dir*22*Math.exp(-lt*.9)*Math.cos(lt*5.2)+dir*3*Math.sin(lt*1.3):dir*22;
+    S(id,{o:P(t,t0,t0+.3),y:(1-drop)*-140,r:sw});
+  });
+  // emphasis at "المفارقة"
+  const e=P(t,6.5,7.1); const pulse=Math.sin(e*Math.PI)*.08;
+  $('s0t2in').style.transform=`scale(${1+pulse})`;
+ },
+ s1(t){
+  enter($('s1t1'),t,9.2,.6,40); enter($('s1t2'),t,13.6,.6,40);
+  const c1=eo(P(t,9.6,10.3)); S('s1c1',{o:P(t,9.6,10),x:(1-c1)*-700});
+  const c2=eo(P(t,13.8,14.5)); S('s1c2',{o:P(t,13.8,14.2),x:(1-c2)*700});
+  const n=P(t,15.6,16.1); S('s1neq',{o:clamp(n*3),s:n>0?lerp(.3,1,eb(n))+Math.sin(Math.max(0,t-16.1)*4)*.04:.3});
+ },
+ s2(t){
+  enter($('s2t'),t,19.2,.6,40);
+  const a=eo(P(t,19.6,20.4)); S('s2a',{o:P(t,19.6,20),x:(1-a)*900,r:lerp(-8,-1.5,a)});
+  $('s2hl').style.width=(eio(P(t,22.3,23.3))*100+3)+'%'; $('s2hl').style.opacity=P(t,22.3,22.4);
+  const b=eo(P(t,25.2,26)); S('s2b',{o:P(t,25.2,25.6),x:(1-b)*-900,r:lerp(8,1.2,b)});
+  $('s2hl2').style.width=(eio(P(t,27,28))*100+3)+'%'; $('s2hl2').style.opacity=P(t,27,27.1);
+  const st=P(t,28.6,29); S('s2stamp',{o:st>0?1:0,s:lerp(2.4,1,eio(st)),r:-14});
+ },
+ s3(t){
+  enter($('s3k'),t,32.2,.6,40); S('s3tagx',{o:P(t,33,33.5)});
+  [['x1',34.2,-1],['x2',35.1,1],['x3',36,-1]].forEach(([id,t0,d],i)=>{
+    const p=pop($(id),t,t0,.45);
+    const sp=eio(P(t,t0+.8,t0+1.2)); $(id).querySelector('.strike').style.width=`calc(${sp*100}% - 40px)`;
+    const out=eio(P(t,38.2+i*.12,38.8+i*.12)); const el=$(id);
+    el.style.opacity=clamp(p*3)*(1-out)*(1-.35*sp);
+    el.style.transform=`translateX(50%) rotate(${d*2*(1-out)+d*-10*out}deg) scale(${(p>0?lerp(.6,1,eb(p)):.6)*(1-.2*out)}) translateY(${out*80}px)`;
+  });
+  enter($('ck1'),t,38.9,.6,120,eb); enter($('ck2'),t,39.5,.6,120,eb);
+ },
+ s4(t){
+  const kb=P(t,43,55); $('s4img').style.transform=`scale(${1.08+kb*.14}) translate(${kb*30}px,${-kb*15}px)`;
+  S('s4arch',{o:P(t,43,43.6),s:lerp(1.05,1,eo(P(t,43,44.2)))});
+  S('s4label',{o:P(t,43.8,44.3)}); enter($('s4t'),t,43.6,.6,40);
+  [['e1',44.6],['p1',45.4],['e2',45.6],['p2',46.5],['e3',46.7],['p3',47.6],['e4',47.8]].forEach(([id,t0])=>pop($(id),t,t0,.5));
+  enter($('s4sum'),t,49.6,.5,40); $('s4fill').style.width=(eio(P(t,50,53))*100)+'%';
+  $('s4sumtxt').style.color=P(t,51.2,51.5)>0?'#F6EEDF':'#14163A';
+ },
+ s5(t){
+  enter($('s5k'),t,55.3,.6,40); pop($('s5year'),t,56.3,.5);
+  const c=eio(P(t,57,60.5)); $('s5val').textContent='+'+(12.1*c).toFixed(1);
+  S('s5num',{o:P(t,57,57.3),s:lerp(.85,1,eo(P(t,57,58)))+(t>60.5?Math.sin(P(t,60.5,61)*Math.PI)*.06:0)});
+  enter($('s5unit'),t,58,.6,30);
+  const r=eio(P(t,61.2,63.8)); $('s5arc').setAttribute('stroke-dasharray',`${28*r} 100`);
+  $('s5pct').textContent=Math.round(28*r)+'%';
+  S('s5ring',{o:P(t,61,61.4),s:lerp(.8,1,eo(P(t,61,61.8)))}); enter($('s5cap'),t,62,.6,30);
+ },
+ s6(t){
+  const a=eo(P(t,68.2,69.2)), b=eo(P(t,68.6,69.6));
+  S('s6a',{o:P(t,68.2,68.6),y:(1-a)*200}); S('s6la',{o:P(t,68.2,68.6),y:(1-a)*200});
+  S('s6b',{o:P(t,68.6,69),y:(1-b)*200}); S('s6lb',{o:P(t,68.6,69),y:(1-b)*200});
+  S('s6la1',{o:P(t,69.4,69.9)}); S('s6lb1',{o:P(t,69.6,70.1)});
+  const kb=P(t,68,80); $('s6ia').style.transform=`scale(${1.1+kb*.12})`; $('s6ib').style.transform=`scale(${1.22-kb*.12}) translateX(${kb*20}px)`;
+  [['pl1',70.6],['pl2',72.3],['pl3',73.9]].forEach(([id,t0])=>{const p=P(t,t0,t0+.55);const el=$(id);el.style.opacity=clamp(p*3);el.style.transform=`translateX(50%) scale(${p>0?lerp(.5,1,eb(p)):.5})`;});
+  // slogan band reveal
+  const bd=eio(P(t,75.6,76.4)); $('s6band').style.clipPath=`inset(${(1-bd)*50}% 0 ${(1-bd)*50}% 0)`; $('s6band').style.opacity=bd>0?1:0;
+  enter($('s6s1'),t,76.2,.7,60); const q=P(t,77,77.7); S('s6s2',{o:clamp(q*3),s:q>0?lerp(.6,1,eb(q)):.6});
+  S('s6star',{o:.16,r:(t-75)*8,s:lerp(.6,1.15,eo(P(t,75.6,78)))});
+ },
+ s7(t){ enter($('s7in'),t,80.3,.8,40); }
+};
+
+const BOUNDS=SEG.slice(1).map(s=>s[0]);
+let lastScene=null;
+function renderAt(t){
+  // scenes
+  let cur=SEG.findIndex(s=>t>=s[0]&&t<s[1]); if(cur<0)cur=SEG.length-1;
+  SEG.forEach((s,i)=>{const el=$(s[2]);el.style.opacity=i===cur?1:0;el.style.visibility=i===cur?'visible':'hidden';});
+  U[SEG[cur][2]](t);
+  // pattern drift
+  document.querySelectorAll('#'+SEG[cur][2]+' > .pattern').forEach(p=>p.style.transform=`translate(${(t*6)%180}px,${(t*4)%180}px)`);
+  // header
+  const dark=['s0','s4','s5','s6','s7'].includes(SEG[cur][2]) && SEG[cur][2]!=='s6';
+  const hc=dark?'#F6EEDF':'#14163A'; $('brand').style.color=hc; $('counter').style.color=hc;
+  $('counter').textContent=cur<7?String(cur+1).padStart(2,'0')+' / 07':'';
+  $('progbar').style.width=(clamp(t/80)*100)+'%';
+  $('header').style.opacity=cur===7?1-P(t,80,80.4):P(t,0,.6);
+  // captions
+  const c=CAPS.find(c=>t>=c.a&&t<c.b); const card=$('capcard');
+  if(c){
+    if(card.dataset.text!==c.text){card.dataset.text=c.text;card.innerHTML=c.text.split(' ').map(w=>`<span>${w}</span>`).join(' ');}
+    const spans=card.children; const n=spans.length; const stg=Math.min(.11,(c.b-c.a)*.45/n);
+    for(let i=0;i<n;i++){const p=eo(P(t,c.a+i*stg,c.a+i*stg+.3));spans[i].style.opacity=p;spans[i].style.transform=`translateY(${(1-p)*18}px)`;}
+    const fo=P(t,c.b-.18,c.b); card.style.opacity=1-fo; card.style.visibility='visible';
+    $('caption').style.transform=`translateY(${(1-eo(P(t,c.a,c.a+.3)))*20}px)`;
+  } else {card.style.visibility='hidden';}
+  // source chip
+  const src=SEG[cur][4]; const chip=$('srcchip');
+  if(src){
+    if(chip.dataset.s!==src){chip.dataset.s=src; chip.innerHTML = src==='ONMT'
+      ? `<span>المصدر:</span><img src="assets/img/L01_ONMT.png" style="height:40px"><span class="ltr">ONMT · 19/03/2026</span>`
+      : `<span>${src}</span>`;}
+    chip.style.background = (dark? 'rgba(246,238,223,.95)':'rgba(20,22,58,.92)'); chip.style.color = dark?'#14163A':'#F6EEDF';
+    chip.style.opacity=P(t,SEG[cur][0]+.8,SEG[cur][0]+1.3);
+  } else chip.style.opacity=0;
+  // wipe transitions (RTL sweep)
+  let wx=2000; const W=.38;
+  for(const B of BOUNDS){ if(t>=B-W&&t<B+W){ const p=(t-B+W)/(2*W); // 0..1
+      wx = p<.5 ? lerp(1300,0,eio(p*2)) : lerp(0,-1500,eio((p-.5)*2));
+      $('wipe').style.background = ['#C4552D','#14163A','#1E6B4E','#C4552D','#3D4FD1','#E8A93A','#14163A'][BOUNDS.indexOf(B)%7];
+      $('wipestar').style.transform=`rotate(${p*180}deg) scale(${.6+Math.sin(p*Math.PI)*.5})`;
+  }}
+  $('wipe').style.transform=`translateX(${wx}px) skewX(-8deg)`;
+}
+window.renderAt=renderAt;
+window.ready=Promise.all([document.fonts.ready,...[...document.images].map(i=>i.decode().catch(()=>{}))]).then(()=>{renderAt(0);return true});
+// preview mode: ?t=12 or ?play
+const q=new URLSearchParams(location.search);
+if(q.has('t'))window.ready.then(()=>renderAt(parseFloat(q.get('t'))));
+if(q.has('play'))window.ready.then(()=>{const t0=performance.now();(function f(){const t=((performance.now()-t0)/1000)%DURATION;renderAt(t);requestAnimationFrame(f)})()});
+</script>
+</body>
+</html>
