@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>الموطور وأول قطرات الشتا</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  html,body{margin:0;background:#000;overflow:hidden}
+  canvas{display:block}
+  /* force le chargement des polices */
+  .preload{position:fixed;left:0;top:0;opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<div class="preload">
+  <span style="font-family:Lalezar">أول قطرات abc</span>
+  <span style="font-family:Cairo;font-weight:900">التشبّت abc</span>
+  <span style="font-family:Cairo;font-weight:600">التشبّت abc</span>
+  <span style="font-family:'Reem Kufi';font-weight:700">الشتا abc</span>
+  <span style="font-family:Anton">ABC</span>
+</div>
+<script>
+'use strict';
+const W = 1080, H = 1920, FPS = 30, DURATION = 64;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+// ---------- palette ----------
+const AMBER = '#FFB21A', RED = '#D62828', GREEN = '#0E7C4A', COBALT = '#1D4E9E',
+      TEAL = '#0B2A33', INK = '#0A0D10', CREAM = '#F3E9D2', WHITE = '#FFFFFF';
+
+// ---------- utils ----------
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+const easeIn = t => t * t * t;
+const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const backOut = t => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+// apparition / disparition dans une fenêtre
+const life = (t, a, b, fin = .35, fout = .3) => Math.min(prog(t, a, a + fin), 1 - prog(t, b - fout, b));
+function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+function hash(n) { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); }
+
+// ---------- images ----------
+const IMG = {};
+function loadImages() {
+  return Promise.all(['P01', 'P02', 'P03', 'P04', 'P05', 'P06'].map(id => new Promise((res, rej) => {
+    const im = new Image(); im.onload = () => { IMG[id] = im; res(); }; im.onerror = rej; im.src = `photos/${id}.jpg`;
+  })));
+}
+
+// dessine une image en mode "cover" dans un rectangle, avec zoom et décalage normalisé
+function cover(img, x, y, w, h, zoom = 1, fx = .5, fy = .5, filter = 'none') {
+  const s = Math.max(w / img.width, h / img.height) * zoom;
+  const iw = img.width * s, ih = img.height * s;
+  const dx = x + (w - iw) * fx, dy = y + (h - ih) * fy;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  ctx.filter = filter;
+  ctx.drawImage(img, dx, dy, iw, ih);
+  ctx.restore();
+  return { s, dx, dy };
+}
+
+const GRADE = 'contrast(1.12) saturate(0.82) brightness(0.78)';
+
+// ---------- texte ----------
+function font(size, fam = 'Lalezar', weight = '') {
+  const f = fam === 'Cairo' ? `${weight || 900} ${size}px Cairo` :
+            fam === 'Reem' ? `700 ${size}px "Reem Kufi"` :
+            fam === 'Anton' ? `${size}px Anton` : `${size}px Lalezar`;
+  return f;
+}
+function txt(s, x, y, size, opt = {}) {
+  const { fam = 'Lalezar', color = WHITE, align = 'center', alpha = 1, stroke = null, sw = 0,
+          shadow = true, dir = 'rtl', weight = '', baseline = 'middle', maxW = 0 } = opt;
+  if (alpha <= 0) return 0;
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  ctx.direction = dir;
+  ctx.font = font(size, fam, weight);
+  ctx.textAlign = align; ctx.textBaseline = baseline;
+  let w = ctx.measureText(s).width;
+  if (maxW && w > maxW) { const k = maxW / w; size *= k; ctx.font = font(size, fam, weight); w = maxW; }
+  if (shadow) { ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6; }
+  if (stroke) { ctx.lineJoin = 'round'; ctx.strokeStyle = stroke; ctx.lineWidth = sw; ctx.strokeText(s, x, y); ctx.shadowColor = 'transparent'; }
+  ctx.fillStyle = color; ctx.fillText(s, x, y);
+  ctx.restore();
+  return w;
+}
+function measure(s, size, fam = 'Lalezar', weight = '') {
+  ctx.save(); ctx.font = font(size, fam, weight); ctx.direction = 'rtl';
+  const w = ctx.measureText(s).width; ctx.restore(); return w;
+}
+function rrect(x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+// étiquette (texte sur fond plein)
+function pill(s, cx, cy, size, opt = {}) {
+  const { bg = AMBER, color = INK, fam = 'Lalezar', alpha = 1, padX = .55, padY = .32, r = 18, skew = 0, scale = 1, weight = '' } = opt;
+  if (alpha <= 0) return;
+  const w = measure(s, size, fam, weight) + size * padX * 2, h = size * (1 + padY * 2);
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, cy); ctx.scale(scale, scale);
+  if (skew) ctx.transform(1, 0, skew, 1, 0, 0);
+  ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+  rrect(-w / 2, -h / 2, w, h, r); ctx.fillStyle = bg; ctx.fill();
+  ctx.restore();
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, cy); ctx.scale(scale, scale);
+  txt(s, 0, size * .06, size, { fam, color, shadow: false, weight });
+  ctx.restore();
+  return w;
+}
+
+// ---------- zellige (étoiles à 8 branches) ----------
+function starPath(c, cx, cy, R, r, n = 8, rot = 0) {
+  c.beginPath();
+  for (let i = 0; i < n * 2; i++) {
+    const a = rot + i * Math.PI / n - Math.PI / 2, rr = i % 2 ? r : R;
+    const px = cx + Math.cos(a) * rr, py = cy + Math.sin(a) * rr;
+    i ? c.lineTo(px, py) : c.moveTo(px, py);
+  }
+  c.closePath();
+}
+function makeZellige(cell, cols) {
+  const z = document.createElement('canvas'); z.width = cell * 2; z.height = cell * 2;
+  const c = z.getContext('2d');
+  const [bg, a, b, d, grout] = cols;
+  c.fillStyle = grout; c.fillRect(0, 0, z.width, z.height);
+  const tile = (cx, cy, colA, colB) => {
+    // carré de fond
+    c.fillStyle = bg; c.fillRect(cx - cell / 2 + 3, cy - cell / 2 + 3, cell - 6, cell - 6);
+    // étoile = deux carrés croisés
+    starPath(c, cx, cy, cell * .46, cell * .34, 8, 0); c.fillStyle = grout; c.fill();
+    starPath(c, cx, cy, cell * .43, cell * .31, 8, 0); c.fillStyle = colA; c.fill();
+    starPath(c, cx, cy, cell * .22, cell * .13, 8, Math.PI / 8); c.fillStyle = colB; c.fill();
+    c.beginPath(); c.arc(cx, cy, cell * .06, 0, 7); c.fillStyle = bg; c.fill();
+    // petites croix aux coins
+    for (const [ox, oy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+      const qx = cx + ox * cell / 2, qy = cy + oy * cell / 2;
+      c.save(); c.translate(qx, qy); c.rotate(Math.PI / 4);
+      c.fillStyle = d; c.fillRect(-cell * .1, -cell * .1, cell * .2, cell * .2); c.restore();
+    }
+  };
+  tile(cell / 2, cell / 2, a, b); tile(cell * 1.5, cell / 2, b, a);
+  tile(cell / 2, cell * 1.5, b, a); tile(cell * 1.5, cell * 1.5, a, b);
+  return z;
+}
+let ZEL, ZEL_DARK;
+
+// ---------- effets ----------
+let GRAIN;
+function makeGrain() {
+  const g = document.createElement('canvas'); g.width = 512; g.height = 512;
+  const c = g.getContext('2d'); const d = c.createImageData(512, 512); const r = rng(7);
+  for (let i = 0; i < d.data.length; i += 4) { const v = r() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 22; }
+  c.putImageData(d, 0, 0); return g;
+}
+function grain(t) {
+  const f = Math.floor(t * FPS);
+  const ox = Math.floor(hash(f) * 512), oy = Math.floor(hash(f + 99) * 512);
+  ctx.save(); ctx.globalCompositeOperation = 'overlay';
+  for (let x = -ox; x < W; x += 512) for (let y = -oy; y < H; y += 512) ctx.drawImage(GRAIN, x, y);
+  ctx.restore();
+}
+function vignette(k = .75) {
+  const g = ctx.createRadialGradient(W / 2, H * .45, H * .25, W / 2, H * .5, H * .78);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${k})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+function gradBand(y0, y1, a0, a1) {
+  const g = ctx.createLinearGradient(0, y0, 0, y1);
+  g.addColorStop(0, `rgba(5,8,10,${a0})`); g.addColorStop(1, `rgba(5,8,10,${a1})`);
+  ctx.fillStyle = g; ctx.fillRect(0, y0, W, y1 - y0);
+}
+// pluie : traits obliques déterministes
+const RAIN = (() => { const r = rng(42), a = []; for (let i = 0; i < 420; i++) a.push({ x: r() * 1.3, y: r(), z: .3 + r() * .7, s: r() }); return a; })();
+function rain(t, intensity = 1, angle = .18) {
+  if (intensity <= 0) return;
+  ctx.save(); ctx.lineCap = 'round';
+  const n = Math.floor(RAIN.length * clamp(intensity));
+  for (let i = 0; i < n; i++) {
+    const d = RAIN[i];
+    const speed = 1.6 + d.z * 2.2;
+    const y = ((d.y + t * speed * .55) % 1.15) * H * 1.0 - 100;
+    const x = (d.x * W * 1.3 - W * .15) - y * angle;
+    const len = 40 + d.z * 90;
+    ctx.strokeStyle = `rgba(210,230,255,${.10 + d.z * .28})`;
+    ctx.lineWidth = .8 + d.z * 2.2;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - len * angle, y + len); ctx.stroke();
+  }
+  ctx.restore();
+}
+// gouttes sur l'objectif
+const DROPS = (() => { const r = rng(9), a = []; for (let i = 0; i < 38; i++) a.push({ x: r() * W, y: r() * H, r: 6 + r() * 26, t0: r() * 8, sl: r() }); return a; })();
+function lensDrops(t, k = 1) {
+  if (k <= 0) return;
+  ctx.save();
+  for (const d of DROPS) {
+    const age = (t + d.t0) % 8;
+    const a = clamp(age / .3) * (1 - clamp((age - 6) / 2)) * k;
+    if (a <= 0) continue;
+    const y = d.y + (d.sl > .7 ? Math.max(0, age - 2) * 60 : 0);
+    const g = ctx.createRadialGradient(d.x - d.r * .3, y - d.r * .35, d.r * .1, d.x, y, d.r);
+    g.addColorStop(0, `rgba(255,255,255,${.55 * a})`);
+    g.addColorStop(.35, `rgba(200,220,235,${.10 * a})`);
+    g.addColorStop(.85, `rgba(0,0,0,${.18 * a})`);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(d.x, y, d.r, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
+// éclair (flash)
+function flash(t, at, k = 1) {
+  const d = t - at; if (d < 0 || d > .5) return;
+  const a = (d < .06 ? 1 : d < .12 ? .25 : d < .18 ? .8 : Math.max(0, 1 - (d - .18) / .32)) * k;
+  ctx.save(); ctx.fillStyle = `rgba(220,235,255,${a * .65})`; ctx.fillRect(0, 0, W, H); ctx.restore();
+}
+
+// ---------- icônes ----------
+function warnSign(cx, cy, size, t, alpha = 1) {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(cx, cy);
+  const h = size, w = size * 1.12;
+  const tri = (k) => { ctx.beginPath(); ctx.moveTo(0, -h * .55 * k); ctx.lineTo(w * .5 * k, h * .42 * k); ctx.lineTo(-w * .5 * k, h * .42 * k); ctx.closePath(); };
+  ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 12;
+  ctx.lineJoin = 'round';
+  tri(1); ctx.fillStyle = WHITE; ctx.fill(); ctx.lineWidth = size * .11; ctx.strokeStyle = RED; ctx.stroke();
+  ctx.shadowColor = 'transparent';
+  // moto stylisée qui dérape
+  const s = size / 300;
+  ctx.save(); ctx.translate(0, h * .12); ctx.scale(s, s); ctx.rotate(-.18 + Math.sin(t * 6) * .04);
+  ctx.strokeStyle = INK; ctx.fillStyle = INK; ctx.lineWidth = 11; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(-52, 18, 26, 0, 7); ctx.stroke();
+  ctx.beginPath(); ctx.arc(54, 18, 26, 0, 7); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-52, 18); ctx.lineTo(-18, -16); ctx.lineTo(28, -16); ctx.lineTo(54, 18); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(28, -16); ctx.lineTo(40, -40); ctx.lineTo(56, -40); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(4, -24, 26, 12, 0, 0, 7); ctx.fill();
+  ctx.restore();
+  // traces de glisse
+  ctx.strokeStyle = INK; ctx.lineWidth = size * .028; ctx.lineCap = 'round';
+  for (let i = 0; i < 2; i++) {
+    ctx.beginPath();
+    const y0 = h * .30 + i * size * .06;
+    ctx.moveTo(-w * .26, y0);
+    ctx.bezierCurveTo(-w * .1, y0 - size * .06, w * .02, y0 + size * .06, w * .2, y0);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function dropIcon(cx, cy, r, color = '#7FC8FF', alpha = 1) {
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color;
+  ctx.beginPath(); ctx.moveTo(cx, cy - r * 1.5);
+  ctx.bezierCurveTo(cx + r * .3, cy - r * .9, cx + r, cy - r * .2, cx + r, cy + r * .25);
+  ctx.arc(cx, cy + r * .25, r, 0, Math.PI);
+  ctx.bezierCurveTo(cx - r, cy - r * .2, cx - r * .3, cy - r * .9, cx, cy - r * 1.5);
+  ctx.fill(); ctx.restore();
+}
+function sunIcon(cx, cy, r, alpha = 1) {
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = AMBER; ctx.strokeStyle = AMBER; ctx.lineWidth = r * .22; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(cx, cy, r * .55, 0, 7); ctx.fill();
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r * .8, cy + Math.sin(a) * r * .8); ctx.lineTo(cx + Math.cos(a) * r * 1.1, cy + Math.sin(a) * r * 1.1); ctx.stroke(); }
+  ctx.restore();
+}
+// jauge d'adhérence qualitative (aucun chiffre)
+function gripMeter(x, y, h, level, t, alpha = 1, label = 'التشبّت') {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha *= alpha;
+  const w = 64;
+  rrect(x - w / 2 - 10, y - 10, w + 20, h + 20, 22); ctx.fillStyle = 'rgba(8,12,16,.72)'; ctx.fill();
+  rrect(x - w / 2, y, w, h, 14); ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.fill();
+  const fh = h * clamp(level);
+  const g = ctx.createLinearGradient(0, y + h, 0, y);
+  g.addColorStop(0, RED); g.addColorStop(.5, AMBER); g.addColorStop(1, '#3BD17A');
+  ctx.save(); rrect(x - w / 2, y, w, h, 14); ctx.clip();
+  ctx.fillStyle = g; ctx.fillRect(x - w / 2, y + h - fh, w, fh);
+  // vaguelette en haut du liquide
+  ctx.fillStyle = 'rgba(255,255,255,.35)';
+  ctx.fillRect(x - w / 2, y + h - fh, w, 5);
+  ctx.restore();
+  // graduations neutres
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 3;
+  for (let i = 1; i < 5; i++) { const yy = y + h * i / 5; ctx.beginPath(); ctx.moveTo(x - w / 2, yy); ctx.lineTo(x - w / 2 + 16, yy); ctx.stroke(); }
+  ctx.restore();
+  txt(label, x, y + h + 56, 40, { fam: 'Cairo', alpha, color: WHITE });
+}
+
+// ---------- étoile de transition (wipe zellige) ----------
+function starClip(p) {
+  const R = lerp(0, H * 1.25, easeInOut(p));
+  starPath(ctx, W / 2, H / 2, R, R * .78, 8, p * .6);
+  ctx.clip();
+}
+
+// ---------- sous-titres ----------
+const SUBS = [
+  [0, 6, ['غير أول قطرات الشتا…', 'يقدرو يزلقو ليك الموطور،', 'والطريق كتبان مزال مافزگاتش!']],
+  [6, 14, ['الرويضة خاصها تشدّ فالزفت', 'باش تفراني وتدور.', 'هاد التشبّت كيجي من الاحتكاك', 'بين الرويضة والطريق.']],
+  [14, 24, ['من بعد مدة بلا شتا،', 'كيتجمع الغبار وبقايا الزيوت.', 'أول قطرات كتخلّطهم بالما،', 'وكتقدر تخلي السطح زلق،', 'بلا ما يتجمع الما.']],
+  [24, 32, ['بحال صباطك فوق زليج', 'فيه الما والصابون:', 'التشبّت كينقص.', 'هادي غير مقارنة باش نفهمو الفكرة.']],
+  [32, 41, ['وبالموطور، فالدوران،', 'الرويضة خاصها تشدّ وانت مايل.', 'نفس السرعة اللي دازت فالناشف،', 'تقدر ما تبقاش مناسبة دابا.']],
+  [41, 51, ['نقص السرعة قبل الدوران،', 'فراني وتسارع تدريجياً،', 'وزيد المسافة.', 'ورد بالك من الصباغة', 'والقوادس المبلّلين.']],
+  [51, 59, ['راقب الرويضات', 'وضبط الضغط حسب توصية المصنع.', 'ما تستناش الطريق تغرق…', 'بدّل السياقة من أول قطرات.']],
+];
+// répartition proportionnelle au nombre de caractères
+const CUES = [];
+for (const [a, b, lines] of SUBS) {
+  const tot = lines.reduce((s, l) => s + l.length + 6, 0);
+  let cur = a;
+  for (const l of lines) { const d = (b - a) * (l.length + 6) / tot; CUES.push({ a: cur, b: cur + d, s: l }); cur += d; }
+}
+window.CUES = CUES;
+function subtitles(t) {
+  const c = CUES.find(c => t >= c.a && t < c.b); if (!c) return;
+  const p = prog(t, c.a, c.a + .18);
+  const y = 1655 + (1 - easeOut(p)) * 18;
+  const size = 58;
+  const w = Math.min(measure(c.s, size, 'Cairo') + 70, W - 80);
+  ctx.save(); ctx.globalAlpha = p;
+  rrect(W / 2 - w / 2, y - 52, w, 104, 26); ctx.fillStyle = 'rgba(6,9,12,.78)'; ctx.fill();
+  // liseré zellige ambre
+  ctx.fillStyle = AMBER; rrect(W / 2 - w / 2, y - 52, 10, 104, 5); ctx.fill();
+  ctx.restore();
+  txt(c.s, W / 2, y + 4, size, { fam: 'Cairo', alpha: p, shadow: false, maxW: W - 150 });
+}
+
+// ---------- éléments permanents ----------
+const SEG = [0, 6, 14, 24, 32, 41, 51, 59];
+function progressBar(t) {
+  const y = 64, x0 = 48, x1 = W - 48, gap = 10, n = SEG.length - 1;
+  const segW = (x1 - x0 - gap * (n - 1)) / n;
+  for (let i = 0; i < n; i++) {
+    // RTL : le premier segment est à droite
+    const x = x1 - (i + 1) * segW - i * gap;
+    rrect(x, y, segW, 8, 4); ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.fill();
+    const p = prog(t, SEG[i], SEG[i + 1]);
+    if (p > 0) { rrect(x + segW * (1 - p), y, segW * p, 8, 4); ctx.fillStyle = AMBER; ctx.fill(); }
+  }
+}
+function tagIllustrative(t, alpha = 1) {
+  pill('صور توضيحية', W - 150, 128, 30, { bg: 'rgba(0,0,0,.55)', color: 'rgba(255,255,255,.9)', fam: 'Cairo', alpha, r: 14, weight: 600 });
+}
+function brandMark(alpha = 1) {
+  // petit motif étoile en haut à gauche
+  ctx.save(); ctx.globalAlpha *= alpha;
+  starPath(ctx, 92, 128, 26, 19, 8, 0); ctx.fillStyle = AMBER; ctx.fill();
+  starPath(ctx, 92, 128, 11, 7, 8, Math.PI / 8); ctx.fillStyle = INK; ctx.fill();
+  ctx.restore();
+  txt('أول شتا', 132, 130, 34, { align: 'left', alpha, fam: 'Reem', dir: 'rtl' });
+}
+
+// =====================================================================
+// SCÈNES  (chaque fonction reçoit le temps local lt et la durée d)
+// =====================================================================
+
+// V01 — accroche
+function scene1(lt) {
+  const z = lerp(1.18, 1.02, easeOut(prog(lt, 0, 6)));
+  cover(IMG.P01, 0, 0, W, H, z, .45, .55, 'contrast(1.12) saturate(.8) brightness(.78) hue-rotate(-8deg)');
+  ctx.fillStyle = 'rgba(10,40,55,.25)'; ctx.fillRect(0, 0, W, H);
+  rain(lt + 3, 1);
+  gradBand(0, 900, .75, 0);
+  // panneau
+  const ps = backOut(prog(lt, .7, 1.25));
+  warnSign(W / 2, 430, 300 * ps, lt, prog(lt, .7, .9));
+  // titre
+  const p1 = easeOut(prog(lt, 1.3, 1.8));
+  const shake = lt < 2.1 && lt > 1.3 ? Math.sin(lt * 90) * 6 * (1 - prog(lt, 1.3, 2.1)) : 0;
+  txt('أول قطرات', W / 2 + shake, 790 - (1 - p1) * 60, 190, { alpha: p1, color: WHITE, stroke: 'rgba(0,0,0,.35)', sw: 10 });
+  const p2 = prog(lt, 2.1, 2.5);
+  pill('خطر ما كيبانش', W / 2, 960, 92, { bg: RED, color: WHITE, alpha: p2, scale: backOut(p2), skew: -.08 });
+  lensDrops(lt, .9);
+  flash(lt, .05, 1); flash(lt, 4.6, .45);
+}
+
+// V02 — le pneu et le grip
+function scene2(lt) {
+  // fond : P02 agrandi et flouté
+  cover(IMG.P02, 0, 0, W, H, 1.1 + lt * .01, .5, .5, 'blur(28px) brightness(.45) saturate(.7)');
+  ctx.fillStyle = 'rgba(8,20,26,.45)'; ctx.fillRect(0, 0, W, H);
+  // carte photo nette
+  const cp = easeOut(prog(lt, 0, .6));
+  const cw = 1000, ch = 866, cx = 40, cy = 330 + (1 - cp) * 80;
+  ctx.save(); ctx.globalAlpha = cp;
+  ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20;
+  rrect(cx, cy, cw, ch, 34); ctx.fillStyle = '#000'; ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.save(); rrect(cx, cy, cw, ch, 34); ctx.clip();
+  const zz = lerp(1.0, 1.1, prog(lt, 0, 8));
+  const m = cover(IMG.P02, cx, cy, cw, ch, zz, .4, .95, 'contrast(1.1) saturate(.85) brightness(.88)');
+  // moyeu et point de contact (coordonnées image)
+  const hub = { x: m.dx + 391 * m.s, y: m.dy + 412 * m.s };
+  const patch = { x: m.dx + 318 * m.s, y: m.dy + 676 * m.s };
+  // flèche de rotation
+  const rp = prog(lt, 1.0, 2.4);
+  if (rp > 0) {
+    ctx.strokeStyle = AMBER; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.setLineDash([2, 26]);
+    const a0 = -Math.PI * .9 + lt * .8;
+    ctx.beginPath(); ctx.arc(hub.x, hub.y, 330 * m.s, a0, a0 + Math.PI * 1.4 * easeOut(rp)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // zone de contact qui pulse
+  const pp = prog(lt, 2.4, 2.9);
+  if (pp > 0) {
+    const pulse = 1 + Math.sin(lt * 6) * .08;
+    const g = ctx.createRadialGradient(patch.x, patch.y, 0, patch.x, patch.y, 190 * pulse);
+    g.addColorStop(0, `rgba(255,178,26,${.75 * pp})`); g.addColorStop(1, 'rgba(255,178,26,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(patch.x, patch.y, 190 * pulse, 0, 7); ctx.fill();
+    ctx.strokeStyle = `rgba(255,255,255,${pp})`; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.ellipse(patch.x, patch.y - 6, 120 * pulse, 40 * pulse, -.12, 0, 7); ctx.stroke();
+  }
+  ctx.restore(); ctx.restore();
+  // étiquettes d'action
+  const lp1 = prog(lt, 1.4, 1.8), lp2 = prog(lt, 1.9, 2.3);
+  pill('تفراني', 820, 300, 54, { alpha: lp1 * cp, scale: backOut(lp1), bg: WHITE, color: INK });
+  pill('تدور', 600, 300, 54, { alpha: lp2 * cp, scale: backOut(lp2), bg: WHITE, color: INK });
+  pill('تسارع', 400, 300, 54, { alpha: prog(lt, 2.3, 2.7) * cp, scale: backOut(prog(lt, 2.3, 2.7)), bg: WHITE, color: INK });
+  // équation
+  const e = easeOut(prog(lt, 3.6, 4.2));
+  const ey = 1340 + (1 - e) * 40;
+  txt('الاحتكاك', 790, ey, 96, { alpha: e });
+  txt('=', W / 2 + 50, ey, 110, { alpha: e, color: AMBER, fam: 'Anton', dir: 'ltr' });
+  txt('التشبّت', 300, ey, 96, { alpha: e, color: AMBER });
+  txt('فالطريق', W / 2, ey + 110, 64, { alpha: prog(lt, 4.3, 4.8), fam: 'Cairo', color: CREAM });
+  rain(lt, .25);
+}
+
+// V03 — saleté + première pluie
+const PART = (() => { const r = rng(5), a = []; for (let i = 0; i < 160; i++) a.push({ x: r(), y: r(), s: r(), k: r() < .62 ? 'dust' : 'oil', t: r() }); return a; })();
+function scene3(lt) {
+  const pan = easeInOut(prog(lt, 0, 10));
+  cover(IMG.P03, 0, 0, W, H, 1.05, lerp(.78, .30, pan), .5, 'contrast(1.12) saturate(.8) brightness(.66)');
+  ctx.fillStyle = 'rgba(12,26,34,.22)'; ctx.fillRect(0, 0, W, H);
+  gradBand(0, 700, .8, 0); gradBand(1200, H, 0, .7);
+  // dépôt de poussière et d'huile (phase sèche : 0–4 s)
+  const dep = easeOut(prog(lt, .4, 4));
+  const wet = easeInOut(prog(lt, 4.2, 7));
+  ctx.save();
+  for (const p of PART) {
+    const appear = clamp((dep - p.t * .8) * 4);
+    if (appear <= 0) continue;
+    const x = p.x * W, y = 1000 + p.y * 520;
+    if (p.k === 'dust') {
+      ctx.fillStyle = `rgba(214,186,140,${.55 * appear * (1 - wet * .5)})`;
+      ctx.beginPath(); ctx.arc(x, y, 3 + p.s * 7, 0, 7); ctx.fill();
+    } else {
+      // tache irisée qui s'étale avec l'eau
+      const r = (10 + p.s * 26) * (1 + wet * 1.6);
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      const hue = (p.s * 360 + lt * 40) % 360;
+      g.addColorStop(0, `hsla(${hue},55%,55%,${.16 * appear})`);
+      g.addColorStop(.6, `hsla(${(hue + 120) % 360},55%,50%,${.09 * appear})`);
+      g.addColorStop(1, 'hsla(0,0%,0%,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, y, r * 1.6, r * .6, 0, 0, 7); ctx.fill();
+    }
+  }
+  ctx.restore();
+  // pluie qui arrive + impacts
+  rain(lt, wet * .9);
+  if (wet > 0) {
+    ctx.save(); ctx.strokeStyle = 'rgba(220,240,255,.5)'; ctx.lineWidth = 2;
+    for (let i = 0; i < 26; i++) {
+      const ph = (lt * 1.7 + hash(i) * 3) % 1; const x = hash(i + 7) * W, y = 1040 + hash(i + 3) * 480;
+      ctx.globalAlpha = (1 - ph) * wet; ctx.beginPath(); ctx.ellipse(x, y, 8 + ph * 60, 3 + ph * 18, 0, 0, 7); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  // titre : chips qui s'additionnent
+  const chips = [['غبار', 1.0, '#D9B98A', INK], ['بقايا الزيوت', 2.4, '#8C6BD8', WHITE], ['أول شتا', 4.4, '#3FA7FF', INK]];
+  const cyy = 330;
+  const xs = [870, 540, 205];
+  chips.forEach(([s, at, bg, col], i) => {
+    const p = prog(lt, at, at + .4);
+    pill(s, xs[i], cyy, 64, { bg, color: col, alpha: p, scale: backOut(p) });
+    if (i < 2) txt('+', (xs[i] + xs[i + 1]) / 2 + (i === 0 ? -20 : 0), cyy, 80, { fam: 'Anton', dir: 'ltr', alpha: prog(lt, chips[i + 1][1] - .3, chips[i + 1][1]), color: WHITE });
+  });
+  // résultat
+  const rp = prog(lt, 6.4, 6.9);
+  txt('=', W / 2, 470, 90, { fam: 'Anton', dir: 'ltr', alpha: rp, color: AMBER });
+  pill('سطح زلق', W / 2, 600, 96, { bg: RED, color: WHITE, alpha: rp, scale: backOut(rp), skew: -.08 });
+  // "pas besoin de flaque"
+  const fp = prog(lt, 8.2, 8.6);
+  if (fp > 0) {
+    ctx.save(); ctx.globalAlpha = fp;
+    rrect(W / 2 - 330, 730, 660, 110, 30); ctx.fillStyle = 'rgba(6,9,12,.7)'; ctx.fill();
+    ctx.restore();
+    dropIcon(W / 2 + 250, 790, 22, '#7FC8FF', fp);
+    ctx.save(); ctx.globalAlpha = fp; ctx.strokeStyle = RED; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(W / 2 + 222, 818); ctx.lineTo(W / 2 + 278, 752); ctx.stroke(); ctx.restore();
+    txt('بلا ما يتجمع الما', W / 2 - 40, 785, 58, { fam: 'Cairo', alpha: fp });
+  }
+  // jauge
+  gripMeter(110, 940, 420, lerp(.92, .45, easeInOut(prog(lt, 4.5, 7.5))), lt, prog(lt, 3.6, 4.1));
+  lensDrops(lt, wet * .7);
+}
+
+// V04 — l'analogie du zellige (création graphique au lieu de réutiliser P02)
+function scene4(lt) {
+  // zellige en perspective
+  ctx.save();
+  ctx.fillStyle = '#0b1418'; ctx.fillRect(0, 0, W, H);
+  ctx.translate(W / 2, H * .62);
+  ctx.transform(1, 0, 0, .62, 0, 0);
+  ctx.rotate(.18 + lt * .01);
+  const pat = ctx.createPattern(ZEL, 'repeat');
+  ctx.fillStyle = pat; ctx.translate(-lt * 14, 0); ctx.fillRect(-2600, -2600, 5200, 5200);
+  ctx.restore();
+  ctx.fillStyle = 'rgba(4,10,14,.38)'; ctx.fillRect(0, 0, W, H);
+  // reflet humide qui balaie
+  const sweep = (lt * .22) % 1.4 - .2;
+  const g = ctx.createLinearGradient(0, H * (sweep - .2), W, H * (sweep + .2));
+  g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(220,240,255,.28)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // film d'eau : flaques brillantes
+  ctx.save(); ctx.globalCompositeOperation = 'screen';
+  for (let i = 0; i < 14; i++) {
+    const x = hash(i + 1) * W, y = 900 + hash(i + 2) * 900, r = 60 + hash(i + 3) * 160;
+    const gg = ctx.createRadialGradient(x, y, 0, x, y, r);
+    gg.addColorStop(0, 'rgba(160,210,255,.22)'); gg.addColorStop(1, 'rgba(160,210,255,0)');
+    ctx.fillStyle = gg; ctx.beginPath(); ctx.ellipse(x, y, r * 1.5, r * .5, 0, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+  gradBand(0, 900, .85, 0); gradBand(1400, H, 0, .75);
+  // bulles de savon
+  for (let i = 0; i < 22; i++) {
+    const ph = (lt * .12 + hash(i + 50)) % 1;
+    const x = hash(i + 60) * W + Math.sin(lt * 1.3 + i) * 30, y = H * (1.05 - ph * 1.1), r = 14 + hash(i + 70) * 34;
+    const a = Math.sin(ph * Math.PI) * prog(lt, .3, 1.2);
+    ctx.save(); ctx.globalAlpha = a;
+    const bg = ctx.createRadialGradient(x - r * .3, y - r * .3, r * .1, x, y, r);
+    bg.addColorStop(0, 'rgba(255,255,255,.55)'); bg.addColorStop(.7, `hsla(${(i * 40 + lt * 60) % 360},90%,75%,.10)`); bg.addColorStop(.95, 'rgba(255,255,255,.45)'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); ctx.restore();
+  }
+  // semelle stylisée (vue de dessous) qui glisse légèrement
+  const sp = easeOut(prog(lt, .6, 1.4));
+  const slide = easeInOut(prog(lt, 2.6, 4.2)) * 110;
+  ctx.save(); ctx.globalAlpha = sp;
+  ctx.translate(W / 2 + 40 + slide, 1150); ctx.rotate(-.35 + slide * .0015);
+  ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 20;
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.ellipse(0, -110, 105, 150, 0, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, 150, 82, 100, 0, 0, 7); ctx.fill();
+  ctx.fillRect(-80, -20, 160, 180);
+  ctx.shadowColor = 'transparent';
+  ctx.strokeStyle = AMBER; ctx.lineWidth = 8;
+  for (let i = -5; i <= 5; i++) { ctx.beginPath(); ctx.moveTo(-70, i * 40 - 20); ctx.lineTo(70, i * 40 - 30); ctx.stroke(); }
+  ctx.restore();
+  // traînée de glisse
+  if (slide > 5) {
+    ctx.save(); ctx.globalAlpha = .6;
+    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 6; ctx.setLineDash([18, 18]);
+    for (let k = -1; k <= 1; k++) { ctx.beginPath(); ctx.moveTo(W / 2 - 60, 1150 + k * 60); ctx.lineTo(W / 2 - 60 + slide * 1.4, 1150 + k * 60 - 20); ctx.stroke(); }
+    ctx.restore();
+  }
+  // titres
+  const t1 = easeOut(prog(lt, .2, .7));
+  txt('زليج + ما + صابون', W / 2, 300 - (1 - t1) * 40, 84, { alpha: t1, color: CREAM });
+  const t2 = prog(lt, 3.0, 3.4);
+  pill('التشبّت كينقص', W / 2, 470, 104, { bg: AMBER, color: INK, alpha: t2, scale: backOut(t2) });
+  // flèche descendante
+  if (t2 > 0) {
+    ctx.save(); ctx.globalAlpha = t2; ctx.fillStyle = RED;
+    const ay = 600 + Math.sin(lt * 5) * 8;
+    ctx.beginPath(); ctx.moveTo(W / 2 - 40, ay); ctx.lineTo(W / 2 + 40, ay); ctx.lineTo(W / 2 + 40, ay + 40); ctx.lineTo(W / 2 + 70, ay + 40); ctx.lineTo(W / 2, ay + 100); ctx.lineTo(W / 2 - 70, ay + 40); ctx.lineTo(W / 2 - 40, ay + 40); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+  pill('تشبيه توضيحي، ماشي نفس المواد', W / 2, 1470, 38, { bg: 'rgba(0,0,0,.6)', color: 'rgba(255,255,255,.92)', fam: 'Cairo', weight: 600, alpha: prog(lt, 5.0, 5.4), r: 16 });
+  gripMeter(110, 840, 420, lerp(.85, .38, easeInOut(prog(lt, 2.8, 4.4))), lt, prog(lt, .8, 1.2));
+}
+
+// V05 — virage
+function scene5(lt) {
+  const z = lerp(1.0, 1.14, easeInOut(prog(lt, 0, 9)));
+  cover(IMG.P05, 0, 0, W, H, z, .5, .55, GRADE);
+  ctx.fillStyle = 'rgba(10,30,40,.18)'; ctx.fillRect(0, 0, W, H);
+  gradBand(0, 1000, .88, 0); rain(lt + 10, .55);
+  // vue de dessus d'un virage
+  const dp = easeOut(prog(lt, .4, 1.2));
+  ctx.save(); ctx.globalAlpha = dp;
+  rrect(70, 170, W - 140, 470, 40); ctx.fillStyle = 'rgba(6,10,14,.78)'; ctx.fill();
+  const ox = 120, oy = 200;
+  // route
+  const P0 = [ox + 60, oy + 400], P1 = [ox + 60, oy + 90], P2 = [ox + 360, oy + 40], P3 = [ox + 800, oy + 90];
+  const bez = (u) => {
+    const a = 1 - u;
+    return [a * a * a * P0[0] + 3 * a * a * u * P1[0] + 3 * a * u * u * P2[0] + u * u * u * P3[0],
+            a * a * a * P0[1] + 3 * a * a * u * P1[1] + 3 * a * u * u * P2[1] + u * u * u * P3[1]];
+  };
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#2a3138'; ctx.lineWidth = 90;
+  ctx.beginPath(); ctx.moveTo(...P0); ctx.bezierCurveTo(...P1, ...P2, ...P3); ctx.stroke();
+  // zone de freinage "avant le virage"
+  ctx.strokeStyle = AMBER; ctx.lineWidth = 90; ctx.globalAlpha = dp * .6;
+  ctx.beginPath();
+  for (let u = 0; u <= .28; u += .01) { const [x, y] = bez(u); u ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+  ctx.stroke(); ctx.globalAlpha = dp;
+  ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 6; ctx.setLineDash([24, 22]);
+  ctx.beginPath(); ctx.moveTo(...P0); ctx.bezierCurveTo(...P1, ...P2, ...P3); ctx.stroke(); ctx.setLineDash([]);
+  // point moto : rapide, ralentit dans la zone ambre, puis régulier
+  const T = (lt * .32) % 1.25;
+  let u = T < .3 ? T * 1.0 : T < .62 ? .3 + (T - .3) * .35 : .412 + (T - .62) * .95;
+  u = clamp(u, 0, 1);
+  const [mx, my] = bez(u);
+  ctx.fillStyle = WHITE; ctx.beginPath(); ctx.arc(mx, my, 20, 0, 7); ctx.fill();
+  ctx.fillStyle = RED; ctx.beginPath(); ctx.arc(mx, my, 10, 0, 7); ctx.fill();
+  ctx.restore();
+  txt('قبل الدوران', ox + 130, oy + 320, 50, { fam: 'Cairo', alpha: dp * prog(lt, 1.2, 1.6), color: AMBER, align: 'left', dir: 'rtl' });
+  // comparaison sec / mouillé
+  const cp = prog(lt, 4.6, 5.0), cp2 = prog(lt, 5.6, 6.0);
+  const by = 1000;
+  if (cp > 0) {
+    ctx.save(); ctx.globalAlpha = cp; rrect(W / 2 + 20, by - 75, 440, 150, 30); ctx.fillStyle = 'rgba(6,9,12,.75)'; ctx.fill(); ctx.restore();
+    sunIcon(W / 2 + 400, by, 38, cp);
+    txt('فالناشف', W / 2 + 210, by, 60, { fam: 'Cairo', alpha: cp });
+  }
+  if (cp2 > 0) {
+    ctx.save(); ctx.globalAlpha = cp2; rrect(W / 2 - 460, by - 75, 440, 150, 30); ctx.fillStyle = 'rgba(214,40,40,.85)'; ctx.fill(); ctx.restore();
+    dropIcon(W / 2 - 80, by + 4, 26, WHITE, cp2);
+    txt('دابا مبلول', W / 2 - 250, by, 60, { fam: 'Cairo', alpha: cp2 });
+  }
+  txt('نفس السرعة؟', W / 2, by - 140, 70, { alpha: cp });
+  // titre
+  const tp = prog(lt, 6.6, 7.0);
+  pill('نقص السرعة قبل الدوران', W / 2, 1250, 84, { bg: AMBER, color: INK, alpha: tp, scale: backOut(tp) });
+  tagIllustrative(lt);
+}
+
+// V06 — les gestes + pièges
+function scene6(lt) {
+  // fond zellige sombre
+  ctx.save(); ctx.fillStyle = ctx.createPattern(ZEL_DARK, 'repeat'); ctx.translate(lt * 10, lt * 6); ctx.fillRect(-200, -200, W + 400, H + 400); ctx.restore();
+  ctx.fillStyle = 'rgba(6,10,13,.55)'; ctx.fillRect(0, 0, W, H);
+  const part2 = lt >= 4.6;
+  if (!part2) {
+    txt('الطريق مبلولة؟', W / 2, 330, 96, { alpha: easeOut(prog(lt, 0, .4)), color: CREAM });
+    const cards = [
+      ['سرعة أقل', 'speed', .3],
+      ['فراني بشوية', 'brake', 1.3],
+      ['مسافة أكثر', 'gap', 2.3],
+    ];
+    cards.forEach(([s, ic, at], i) => {
+      const p = easeOut(prog(lt, at, at + .45));
+      const y = 560 + i * 300;
+      const x = W / 2 + (1 - p) * 300;
+      const a = p * (1 - prog(lt, 4.2, 4.6));
+      ctx.save(); ctx.globalAlpha = a;
+      rrect(x - 450, y - 120, 900, 240, 40); ctx.fillStyle = 'rgba(18,24,30,.92)'; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,178,26,.6)'; ctx.lineWidth = 4; ctx.stroke();
+      // icône à droite (RTL)
+      const ix = x + 320, iy = y;
+      ctx.beginPath(); ctx.arc(ix, iy, 78, 0, 7); ctx.fillStyle = AMBER; ctx.fill();
+      ctx.strokeStyle = INK; ctx.fillStyle = INK; ctx.lineWidth = 10; ctx.lineCap = 'round';
+      if (ic === 'speed') {
+        ctx.beginPath(); ctx.arc(ix, iy + 14, 46, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+        const na = Math.PI * (1.85 - .6 * easeInOut(prog(lt, at + .3, at + 1.1)));
+        ctx.beginPath(); ctx.moveTo(ix, iy + 14); ctx.lineTo(ix + Math.cos(na) * 40, iy + 14 + Math.sin(na) * 40); ctx.stroke();
+      } else if (ic === 'brake') {
+        ctx.beginPath(); ctx.moveTo(ix - 44, iy + 30);
+        ctx.bezierCurveTo(ix - 10, iy + 30, ix + 0, iy - 34, ix + 44, iy - 34); ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.arc(ix - 36, iy, 14, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.arc(ix + 36, iy, 14, 0, 7); ctx.fill();
+        const gw = 10 + 8 * Math.sin(lt * 3);
+        ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(ix - 16 - gw * .2, iy - 30); ctx.lineTo(ix + 16 + gw * .2, iy - 30); ctx.stroke();
+      }
+      ctx.restore();
+      txt(s, x + 180, y + 4, 82, { alpha: a, align: 'right' });
+      txt(['', 'وتسارع تدريجياً', ''][i], x + 180, y + 78, 40, { fam: 'Cairo', weight: 600, alpha: a * prog(lt, at + .5, at + .9), align: 'right', color: 'rgba(255,255,255,.75)' });
+    });
+    pill('حركات تدريجية', W / 2, 1420, 70, { bg: GREEN, color: WHITE, alpha: prog(lt, 3.2, 3.6) * (1 - prog(lt, 4.2, 4.6)), scale: backOut(prog(lt, 3.2, 3.6)) });
+  } else {
+    const l2 = lt - 4.6;
+    // écran partagé : marquage peint + plaque métallique
+    const sp = easeOut(prog(l2, 0, .5));
+    const topH = 760;
+    cover(IMG.P03, 0, 170 - (1 - sp) * 200, W, topH, 1.35 + l2 * .02, .88, .72, 'contrast(1.15) saturate(.85) brightness(.75)');
+    cover(IMG.P04, 0, 170 + topH + 20 + (1 - sp) * 200, W, topH, 1.15 + l2 * .02, .5, .5, 'contrast(1.15) saturate(.9) brightness(.78)');
+    ctx.fillStyle = AMBER; ctx.fillRect(0, 170 + topH, W, 20);
+    // cercles de repérage
+    const c1 = easeOut(prog(l2, .4, 1.0)), c2 = easeOut(prog(l2, 1.2, 1.8));
+    ctx.save(); ctx.lineWidth = 10; ctx.strokeStyle = AMBER;
+    if (c1 > 0) { ctx.beginPath(); ctx.ellipse(560, 700, 420, 150, -.12, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * c1); ctx.stroke(); }
+    if (c2 > 0) { ctx.beginPath(); ctx.arc(W / 2, 170 + topH + 20 + topH / 2, 330, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * c2); ctx.stroke(); }
+    ctx.restore();
+    pill('خطوط الصباغة', W / 2, 300, 72, { bg: INK, color: AMBER, alpha: c1, scale: backOut(c1) });
+    pill('أغطية القوادس', W / 2, 1480, 72, { bg: INK, color: AMBER, alpha: c2, scale: backOut(c2) });
+    pill('ورد بالك!', W / 2, 935 + 10, 74, { bg: RED, color: WHITE, alpha: prog(l2, 2.0, 2.3), scale: backOut(prog(l2, 2.0, 2.3)), skew: -.08 });
+    rain(lt, .35);
+    tagIllustrative(lt, sp);
+  }
+}
+
+// V07 — pneus + conclusion
+function scene7(lt) {
+  if (lt < 4) {
+    cover(IMG.P02, 0, 0, W, H, 1.1, .5, .5, 'blur(30px) brightness(.4) saturate(.6)');
+    ctx.fillStyle = 'rgba(8,16,22,.5)'; ctx.fillRect(0, 0, W, H);
+    // jauge de pression sans chiffre
+    const gp = easeOut(prog(lt, .1, .6));
+    const gx = W / 2, gy = 820, R = 300;
+    ctx.save(); ctx.globalAlpha = gp; ctx.translate(gx, gy); ctx.scale(.85 + .15 * gp, .85 + .15 * gp);
+    ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 50;
+    ctx.beginPath(); ctx.arc(0, 0, R, 0, 7); ctx.fillStyle = '#111820'; ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.lineWidth = 16; ctx.strokeStyle = '#2a3440'; ctx.beginPath(); ctx.arc(0, 0, R - 8, 0, 7); ctx.stroke();
+    const a0 = Math.PI * .75, a1 = Math.PI * 2.25;
+    ctx.lineWidth = 34; ctx.lineCap = 'butt';
+    ctx.strokeStyle = '#33414f'; ctx.beginPath(); ctx.arc(0, 0, R - 70, a0, a1); ctx.stroke();
+    // zone recommandée
+    const zc = lerp(a0, a1, .58), zw = .16;
+    ctx.strokeStyle = GREEN; ctx.beginPath(); ctx.arc(0, 0, R - 70, zc - zw, zc + zw); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 6;
+    for (let i = 0; i <= 12; i++) { const a = lerp(a0, a1, i / 12); ctx.beginPath(); ctx.moveTo(Math.cos(a) * (R - 110), Math.sin(a) * (R - 110)); ctx.lineTo(Math.cos(a) * (R - 135), Math.sin(a) * (R - 135)); ctx.stroke(); }
+    // aiguille qui se cale
+    const np = easeOut(prog(lt, .6, 1.8));
+    const na = lerp(lerp(a0, a1, .15), zc, np) + Math.sin(lt * 14) * .02 * (1 - np);
+    ctx.strokeStyle = AMBER; ctx.lineWidth = 14; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(na) * (R - 95), Math.sin(na) * (R - 95)); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 28, 0, 7); ctx.fillStyle = AMBER; ctx.fill();
+    ctx.restore();
+    txt('✓', gx + Math.cos(lerp(Math.PI * .75, Math.PI * 2.25, .58)) * 330, gy + Math.sin(lerp(Math.PI * .75, Math.PI * 2.25, .58)) * 330 - 10, 64, { fam: 'Cairo', color: '#3BD17A', alpha: prog(lt, 1.6, 1.9), dir: 'ltr' });
+    txt('راقب الرويضات', W / 2, 300, 96, { alpha: easeOut(prog(lt, 0, .4)) });
+    const tp = prog(lt, 1.6, 2.0);
+    pill('الضغط حسب توصية المصنع', W / 2, 1250, 72, { bg: AMBER, color: INK, alpha: tp, scale: backOut(tp) });
+    txt('قيس الضغط والرويضات باردين', W / 2, 1370, 46, { fam: 'Cairo', weight: 600, alpha: prog(lt, 2.4, 2.8), color: CREAM });
+  } else {
+    const l2 = lt - 4;
+    const z = lerp(1.2, 1.04, easeOut(prog(l2, 0, 4)));
+    cover(IMG.P06, 0, 0, W, H, z, .45, .5, 'contrast(1.12) saturate(.85) brightness(.66)');
+    ctx.fillStyle = 'rgba(10,28,36,.2)'; ctx.fillRect(0, 0, W, H);
+    rain(lt + 20, .9); gradBand(0, 1100, .9, 0);
+    const a = easeOut(prog(l2, .1, .5));
+    txt('ما تستناش الطريق تغرق', W / 2, 330 - (1 - a) * 30, 80, { alpha: a, color: CREAM });
+    const b = prog(l2, 1.4, 1.8);
+    txt('بدّل السياقة', W / 2, 520, 150, { alpha: b, color: WHITE, stroke: 'rgba(0,0,0,.3)', sw: 10 });
+    const c = prog(l2, 1.8, 2.2);
+    pill('من أول قطرات', W / 2, 700, 110, { bg: AMBER, color: INK, alpha: c, scale: backOut(c), skew: -.08 });
+    lensDrops(lt, 1);
+    tagIllustrative(lt, a);
+    flash(lt, 4.02, .35);
+  }
+}
+
+// Fin — rappel + crédits (obligatoires pour CC BY / BY-SA)
+function sceneOutro(lt) {
+  ctx.save(); ctx.fillStyle = ctx.createPattern(ZEL_DARK, 'repeat'); ctx.translate(-lt * 8, 0); ctx.fillRect(-100, -100, W + 200, H + 200); ctx.restore();
+  ctx.fillStyle = 'rgba(5,8,11,.80)'; ctx.fillRect(0, 0, W, H);
+  const a = easeOut(prog(lt, 0, .5));
+  starPath(ctx, W / 2, 360, 110 * a, 80 * a, 8, lt * .3); ctx.fillStyle = AMBER; ctx.fill();
+  starPath(ctx, W / 2, 360, 52 * a, 34 * a, 8, Math.PI / 8 - lt * .3); ctx.fillStyle = INK; ctx.fill();
+  txt('الموطور وأول قطرات الشتا', W / 2, 560, 92, { alpha: a });
+  txt('سوق على حساب الطريق، ماشي على حساب العادة', W / 2, 660, 44, { fam: 'Cairo', weight: 600, alpha: prog(lt, .4, .8), color: CREAM });
+  const credits = [
+    'Photos illustratives — non prises au Maroc / lieu non confirmé',
+    'P01 Gowtham9298 · CC BY-SA 4.0 · Wikimedia Commons',
+    'P02 meriden.triumph / Rocknrollmancer · CC BY 2.0',
+    'P03 JIP · CC BY-SA 4.0 · Wikimedia Commons',
+    'P04 Panek · CC BY-SA 3.0 · Wikimedia Commons',
+    'P05 Tiwi Riders · P06 Sachu Zayn · Pexels License',
+    'Photos recadrées, étalonnées et annotées.',
+    'Sources : NWS · NY DMV Motorcycle Manual · Michelin',
+  ];
+  credits.forEach((s, i) => txt(s, W / 2, 900 + i * 62, i === 0 ? 34 : 32, { fam: 'Cairo', weight: 600, dir: 'ltr', alpha: prog(lt, .6 + i * .08, 1 + i * .08) * (i === 0 ? 1 : .8), color: i === 0 ? AMBER : WHITE, shadow: false }));
+  rain(lt, .3);
+}
+
+const SCENES = [
+  { a: 0, b: 6, f: scene1, illus: true },
+  { a: 6, b: 14, f: scene2, illus: true },
+  { a: 14, b: 24, f: scene3, illus: true },
+  { a: 24, b: 32, f: scene4, illus: false },
+  { a: 32, b: 41, f: scene5, illus: false },
+  { a: 41, b: 51, f: scene6, illus: false },
+  { a: 51, b: 59, f: scene7, illus: false },
+  { a: 59, b: 64, f: sceneOutro, illus: false },
+];
+const TR = .45; // durée transition étoile
+
+function render(t) {
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.filter = 'none'; ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  const i = SCENES.findIndex(s => t >= s.a && t < s.b);
+  const idx = i < 0 ? SCENES.length - 1 : i;
+  const S = SCENES[idx];
+  // scène courante
+  ctx.save(); S.f(t - S.a); ctx.restore();
+  if (S.illus && idx < 3) tagIllustrative(t);
+  // transition étoile vers la scène suivante (débute TR avant la coupe)
+  const N = SCENES[idx + 1];
+  if (N && t > S.b - TR) {
+    const p = prog(t, S.b - TR, S.b);
+    ctx.save(); starClip(p); N.f(t - N.a); ctx.restore();
+    // liseré ambre de l'étoile
+    ctx.save(); const R = lerp(0, H * 1.25, easeInOut(p));
+    starPath(ctx, W / 2, H / 2, R, R * .78, 8, p * .6); ctx.lineWidth = 14; ctx.strokeStyle = AMBER; ctx.stroke(); ctx.restore();
+  }
+  vignette(.55);
+  if (t < 59) { progressBar(t); brandMark(); subtitles(t); }
+  grain(t);
+  // fondu d'entrée / sortie
+  if (t < .25) { ctx.fillStyle = `rgba(0,0,0,${1 - t / .25})`; ctx.fillRect(0, 0, W, H); }
+  if (t > DURATION - .6) { ctx.fillStyle = `rgba(0,0,0,${prog(t, DURATION - .6, DURATION)})`; ctx.fillRect(0, 0, W, H); }
+  ctx.restore();
+}
+window.render = render;
+
+window.ready = (async () => {
+  await document.fonts.ready;
+  await Promise.all([
+    document.fonts.load('100px Lalezar', 'أول قطرات گ'), document.fonts.load('900 60px Cairo', 'التشبّت گ'),
+    document.fonts.load('600 60px Cairo', 'التشبّت'), document.fonts.load('700 60px "Reem Kufi"', 'الشتا'),
+    document.fonts.load('60px Anton', '=+'), document.fonts.load('600 60px Cairo', 'Photos'),
+  ]);
+  await loadImages();
+  GRAIN = makeGrain();
+  ZEL = makeZellige(150, ['#F3E9D2', '#1D4E9E', '#0E7C4A', '#C8553D', '#E9DFC7']);
+  ZEL_DARK = makeZellige(120, ['#141B22', '#1B3557', '#123E2C', '#4A2A22', '#0C1116']);
+  const q = new URLSearchParams(location.search);
+  if (q.has('t')) render(parseFloat(q.get('t')));
+  else if (q.has('play')) { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); }; loop(); }
+  else render(0.01);
+  return true;
+})();
+</script>
+</body>
+</html>
