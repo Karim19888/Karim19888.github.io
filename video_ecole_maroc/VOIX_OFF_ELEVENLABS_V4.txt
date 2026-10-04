@@ -1,0 +1,69 @@
+VOIX OFF — ElevenLabs v4 — darija marocaine — cible 59 s
+==========================================================
+
+Réglages
+- Modèle : eleven_v4   |   language_code : ar
+- Voix : chercher « Moroccan » / « Darija » dans la Voice Library (voix posée, chaleureuse, 25-40 ans).
+  La voix compte autant que le texte : une voix arabe du Golfe ou de l'Égypte donnera un accent faux.
+- Les tags [ ] sont en anglais (c'est ce que le modèle comprend) ; ils ne sont pas prononcés.
+- Les chiffres sont écrits en toutes lettres en darija pour éviter une lecture en arabe classique.
+- Faire 2-3 prises et garder la meilleure.
+
+
+OPTION A — UNE SEULE PRISE (à coller tel quel)
+----------------------------------------------
+
+[strong Moroccan accent] [warmly] فالمغرب، كاين آباء كيخلّصو جوج حوايج… ففاتورة وحدة: قراية ولادهم… [softly] وراحة بالهم.
+
+[curious] وشوف هاد المفارقة: إيطاليا — دولة متقدمة، وأغنى منا بزاف — غير ستة من كل مية تلميذ فالابتدائي كيقراو فالخصوصي. [short pause] وفالمغرب… تسعتاش. [dramatically] تقريباً ثلاث مرات أكثر.
+
+[serious] وهادشي تبدّل مع الوقت: سنة ألفين، الخصوصي كان فيه غير خمسة فالمية من تلاميذ الابتدائي. فموسم ألفين وربعة وعشرين، خمسة وعشرين… وصل لتسعتاش.
+
+ومن الأسباب اللي كتدفع بعض العائلات ليه: الثقة اللي نقصات فالعمومي. الأب والأم باغيين التتبّع، اللغات، وولدهم ما يضيعش عليه الوقت.
+
+[softly] وكاين اللي كيضيّق على مصاريف الدار باش يخلّص المدرسة… حيث مستقبل ولدو، ما باغيش يغامر بيه.
+
+[short pause] [firmly] ولكن اللي ما عندوش باش يخلّص… حتى ولدو عندو نفس الحق.
+
+[warmly] المدرسة العمومية خاصها تكون اختيار كنثقو فيه… ماشي الاختيار اللي كيبقى لينا، ملي ما كيبقاوش الفلوس.
+
+
+OPTION B — 7 PRISES SÉPARÉES (recommandé : chaque clip se cale sur son plan)
+---------------------------------------------------------------------------
+Générer chaque bloc séparément, puis le poser à la seconde indiquée dans le montage.
+Chaque clip doit tenir dans sa durée ; sinon, refaire une prise.
+
+[00:00 → 00:07 | 7 s]
+[strong Moroccan accent] [warmly] فالمغرب، كاين آباء كيخلّصو جوج حوايج… ففاتورة وحدة: قراية ولادهم… [softly] وراحة بالهم.
+
+[00:07 → 00:21 | 14 s]
+[strong Moroccan accent] [curious] وشوف هاد المفارقة: إيطاليا — دولة متقدمة، وأغنى منا بزاف — غير ستة من كل مية تلميذ فالابتدائي كيقراو فالخصوصي. [short pause] وفالمغرب… تسعتاش. [dramatically] تقريباً ثلاث مرات أكثر.
+
+[00:21 → 00:32 | 11 s]
+[strong Moroccan accent] [serious] وهادشي تبدّل مع الوقت: سنة ألفين، الخصوصي كان فيه غير خمسة فالمية من تلاميذ الابتدائي. فموسم ألفين وربعة وعشرين، خمسة وعشرين… وصل لتسعتاش.
+
+[00:32 → 00:42 | 10 s]
+[strong Moroccan accent] [serious] ومن الأسباب اللي كتدفع بعض العائلات ليه: الثقة اللي نقصات فالعمومي. الأب والأم باغيين التتبّع، اللغات، وولدهم ما يضيعش عليه الوقت.
+
+[00:42 → 00:48 | 6 s]
+[strong Moroccan accent] [softly] وكاين اللي كيضيّق على مصاريف الدار باش يخلّص المدرسة… حيث مستقبل ولدو، ما باغيش يغامر بيه.
+
+[00:48 → 00:52 | 4 s]
+[strong Moroccan accent] [firmly] ولكن اللي ما عندوش باش يخلّص… حتى ولدو عندو نفس الحق.
+
+[00:52 → 00:59 | 7 s]
+[strong Moroccan accent] [warmly] المدرسة العمومية خاصها تكون اختيار كنثقو فيه… ماشي الاختيار اللي كيبقى لينا، ملي ما كيبقاوش الفلوس.
+
+
+SI ÇA DÉPASSE 59 s (consigne du pack)
+-------------------------------------
+1. Supprimer « وهادشي تبدّل مع الوقت: »
+2. Puis, si besoin, supprimer « حيث مستقبل ولدو، ما باغيش يغامر بيه. »
+Garder « بعض العائلات » et les dates. Ne pas accélérer les chiffres.
+Raccourcir aussi « ألفين وربعة وعشرين، خمسة وعشرين » en « أربعة وعشرين، خمسة وعشرين » si ça bloque.
+
+SI LA VOIX SONNE TROP « CLASSIQUE »
+-----------------------------------
+- Changer de voix d'abord (c'est le facteur n°1).
+- Retirer [strong Moroccan accent] si la voix est déjà marocaine (le tag peut alors exagérer).
+- Mot mal lu : le remplacer par sa transcription IPA entre slashes, ex. /kajxallsˤu/ pour كيخلّصو.
