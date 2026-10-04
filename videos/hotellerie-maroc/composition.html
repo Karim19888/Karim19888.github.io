@@ -283,34 +283,34 @@ function patternURL(color){
 const PC={cream:'#F6EEDF',ink:'#14163A',saffron:'#E8A93A'};
 document.querySelectorAll('.pattern').forEach(e=>e.style.backgroundImage=patternURL(PC[e.dataset.pat]||'#F6EEDF'));
 
-// ---------- timeline (Reel ~42 s) ----------
+// ---------- timeline calée sur la voix off ElevenLabs v4 (voix "Yassine", 51,5 s) ----------
 const SEG=[ // [start,end,sceneId,source]
- [0,4.6,'s0',''],
- [4.6,11,'s1','المصدر: Hespress · 18/08/2025'],
- [11,16,'s2','مصادر: Hespress EN · Hespress — 2025'],
- [16,20.5,'s3','رأي تحريري · أمثلة توضيحية'],
- [20.5,25.5,'s4',''],
- [25.5,31.5,'s5','ONMT'],
- [31.5,38,'s6',''],
- [38,42,'s7','']
+ [0,7.1,'s0',''],
+ [7.1,15.73,'s1','المصدر: Hespress · 18/08/2025'],
+ [15.73,23.07,'s2','مصادر: Hespress EN · Hespress — 2025'],
+ [23.07,31.0,'s3','رأي تحريري · أمثلة توضيحية'],
+ [31.0,36.02,'s4',''],
+ [36.02,43.85,'s5','ONMT'],
+ [43.85,52,'s6',''],
+ [52,56,'s7','']
 ];
-const DURATION=42; window.DURATION=DURATION;
+const DURATION=56, MAIN_END=52; window.DURATION=DURATION;
 const CAPS=[
- {a:1.9,b:4.55,text:'اللي جاي من أوروبا يقدر يحجز أرخص منك… ونتا ساكن فالمغرب.'},
- {a:4.7,b:7.9,text:'وكالات الأسفار كتفاوض على حجوزات بالجملة وكتاخد تخفيضات.'},
- {a:8.0,b:10.95,text:'هادي كتفسّر بعض الفروقات… ولكن ماشي فرق المعاملة.'},
- {a:11.1,b:13.5,text:'جمعيات المستهلك نبهات لشكايات على تفضيل الأجانب عند بعض الفنادق.'},
- {a:13.5,b:15.95,text:'ومهنيين فالقطاع أكدو أن هاد الممارسات موجودة عند البعض.'},
- {a:16.1,b:20.45,text:'الزبون المغربي جاي يخلص ويرتاح… هادو ماشي تفاصيل صغيرة.'},
- {a:20.6,b:25.45,text:'عرض العائلة خاصو يتحسب على الميزانية كاملة: الفندق، الطريق، الماكلة والدراري.'},
- {a:25.6,b:28.6,text:'فـ2025، السياحة الداخلية: أكثر من 12 مليون ليلة مبيت.'},
- {a:28.6,b:31.45,text:'يعني حوالي 28% من ليالي المبيت السياحية.'},
- {a:31.6,b:35.1,text:'خاص عروض واضحة، خدمة تستاهل الثمن، ونفس الاحترام للجميع.'}
+ {a:3.95,b:7.0,text:'واللي جاي من أوروبا… يقدر يخلّص أقل منك.'},
+ {a:7.1,b:11.4,text:'علاش؟ وكالات الأسفار كتشري بالجملة، وكتاخد تخفيضات.'},
+ {a:11.46,b:15.65,text:'مقبول… ولكن التخفيض حاجة، والمعاملة حاجة أخرى.'},
+ {a:15.73,b:21.4,text:'فـ2025، جمعيات حماية المستهلك نبهات لشكايات على تفضيل الأجانب…'},
+ {a:21.4,b:23.0,text:'عند بعض الفنادق.'},
+ {a:23.07,b:26.95,text:'ترحيب بارد، خدمة ناقصة، مصاريف مفاجئة…'},
+ {a:27.0,b:30.95,text:'المغربي جاي يخلّص ويرتاح، بحالو بحال أي زبون.'},
+ {a:31.0,b:35.95,text:'والعائلة كتحسب كلشي: الفندق، الطريق، الماكلة… والدراري.'},
+ {a:36.02,b:39.85,text:'والمغربي عندو وزن: أكثر من 12 مليون ليلة مبيت…'},
+ {a:39.9,b:43.8,text:'يعني تقريبا 28% من ليالي المبيت السياحية.'},
+ {a:43.85,b:48.45,text:'عروض واضحة، خدمة تستاهل الثمن، ونفس الاحترام للجميع.'}
 ];
-// impacts: [time, flash strength, shake px]
-const HITS=[[0,.9,26],[.6,.7,22],[1.2,.7,22],[1.8,.5,16],[2.45,.8,30],[4.6,.6,10],[8.7,.4,24],[11,.6,10],[11.3,0,14],[13.1,0,14],[14.6,.3,26],
- [16,.6,10],[16.3,0,12],[16.9,0,12],[17.5,0,12],[20.5,.6,10],[25.5,.6,10],[28.6,0,18],[31.5,.6,10],[35.2,.8,30],[38,.5,0]];
-const SLAMS=[['نفس الفندق',0],['نفس البيت',.6],['نفس الليلة',1.2]];
+const HITS=[[0,.9,26],[1.28,.7,22],[2.54,.7,22],[3.95,.5,16],[5.3,.8,30],[7.1,.6,10],[12.6,.4,24],[15.73,.6,10],[16.0,.3,26],[17.13,0,14],[19.4,0,14],
+ [23.07,.6,12],[24.24,0,12],[25.38,0,12],[29.04,0,14],[31.0,.6,10],[36.02,.6,10],[39.0,0,18],[43.85,.6,10],[48.55,.8,30],[52,.5,0]];
+const SLAMS=[['نفس الفندق',0],['نفس البيت',1.28],['نفس الليلة',2.54]];
 
 // ---------- helpers ----------
 const $=id=>document.getElementById(id);
@@ -327,73 +327,72 @@ function slam(el,t,t0,dur=.18,from=1.8){const p=P(t,t0,t0+dur);S(el,{o:p>0?1:0,s
 // ---------- scene updaters ----------
 const U={
  s0(t){
-  // punch-zoom on the background at every slam
-  let z=1.12; for(const [,h] of SLAMS){ if(t>=h) z=1.12+.18*(1-eo(P(t,h,h+.35))) + h*.05; }
+  let z=1.12; for(const [,h] of SLAMS){ if(t>=h) z=1.12+.18*(1-eo(P(t,h,h+.35))) + h*.03; }
   $('h_bg').style.transform=`scale(${z})`;
   const cur=SLAMS.filter(s=>t>=s[1]).pop(); const el=$('h_slam');
-  if(cur && t<1.8){ if(el.dataset.w!==cur[0]){el.dataset.w=cur[0];const [w1,w2]=cur[0].split(' ');el.innerHTML=`${w1} <span style="color:#E8A93A">${w2}</span>`;} slam(el,t,cur[1],.16,2.2); } else el.style.opacity=0;
-  $('h_bgwrap').style.opacity=t<1.8?1:1-P(t,1.8,2.0);
-  const a=eo(P(t,1.8,2.1)), b=eo(P(t,1.9,2.2));
-  S('h_top',{o:P(t,1.8,1.9),x:(1-a)*1100}); S('h_bot',{o:P(t,1.9,2.0),x:(1-b)*-1100});
-  $('h_ti').style.transform=`scale(${1.1+P(t,1.8,4.6)*.1})`;
-  pop($('h_pa'),t,2.15,.3); pop($('h_pb'),t,2.25,.3);
-  const st=P(t,2.45,2.62); S('h_stamp',{o:st>0?1:0,s:lerp(2.6,1,eo(st))+Math.sin(Math.max(0,t-3.4)*6)*.03*(t>3.4),r:-4});
-  S('h_label',{o:P(t,2.2,2.5)});
+  if(cur && t<3.95){ if(el.dataset.w!==cur[0]){el.dataset.w=cur[0];const [w1,w2]=cur[0].split(' ');el.innerHTML=`${w1} <span style="color:#E8A93A">${w2}</span>`;} slam(el,t,cur[1],.16,2.2); } else el.style.opacity=0;
+  $('h_bgwrap').style.opacity=t<3.95?1:1-P(t,3.95,4.15);
+  const a=eo(P(t,3.95,4.25)), b=eo(P(t,4.05,4.35));
+  S('h_top',{o:P(t,3.95,4.05),x:(1-a)*1100}); S('h_bot',{o:P(t,4.05,4.15),x:(1-b)*-1100});
+  $('h_ti').style.transform=`scale(${1.1+P(t,3.95,7.1)*.1})`;
+  pop($('h_pa'),t,4.3,.3); pop($('h_pb'),t,4.45,.3);
+  const st=P(t,5.3,5.47); S('h_stamp',{o:st>0?1:0,s:lerp(2.6,1,eo(st))+Math.sin(Math.max(0,t-6)*6)*.03*(t>6),r:-4});
+  S('h_label',{o:P(t,4.4,4.7)});
  },
  s1(t){
-  enter($('s1t1'),t,4.7,.3,40); enter($('s1t2'),t,8.1,.3,40);
-  const c1=eo(P(t,4.75,5.1)); S('s1c1',{o:P(t,4.75,4.9),x:(1-c1)*-900});
-  const c2=eo(P(t,8.2,8.5)); S('s1c2',{o:P(t,8.2,8.35),x:(1-c2)*900});
-  const n=P(t,8.7,8.9); S('s1neq',{o:n>0?1:0,s:lerp(3,1,eo(n))+Math.sin(Math.max(0,t-8.9)*5)*.05});
+  enter($('s1t1'),t,7.2,.3,40); enter($('s1t2'),t,14.16,.3,40);
+  const c1=eo(P(t,7.86,8.2)); S('s1c1',{o:P(t,7.86,8.0),x:(1-c1)*-900});
+  const n=P(t,12.6,12.8); S('s1neq',{o:n>0?1:0,s:lerp(3,1,eo(n))+Math.sin(Math.max(0,t-12.8)*5)*.05});
+  const c2=eo(P(t,14.16,14.5)); S('s1c2',{o:P(t,14.16,14.3),x:(1-c2)*900});
  },
  s2(t){
-  enter($('s2t'),t,11.05,.3,40);
-  const a=eo(P(t,11.3,11.55)); S('s2a',{o:a>0?1:0,s:lerp(1.6,1,a),r:lerp(-12,-1.5,a)});
-  $('s2hl').style.width=(eio(P(t,11.9,12.5))*100+3)+'%'; $('s2hl').style.opacity=P(t,11.9,11.95);
-  const b=eo(P(t,13.1,13.35)); S('s2b',{o:b>0?1:0,s:lerp(1.6,1,b),r:lerp(12,1.2,b)});
-  $('s2hl2').style.width=(eio(P(t,13.7,14.3))*100+3)+'%'; $('s2hl2').style.opacity=P(t,13.7,13.75);
-  const st=P(t,14.6,14.78); S('s2stamp',{o:st>0?1:0,s:lerp(2.8,1,eio(st)),r:-14});
+  enter($('s2t'),t,15.8,.3,40);
+  const st=P(t,16.0,16.18); S('s2stamp',{o:st>0?1:0,s:lerp(2.8,1,eio(st)),r:-14});
+  const a=eo(P(t,17.13,17.38)); S('s2a',{o:a>0?1:0,s:lerp(1.6,1,a),r:lerp(-12,-1.5,a)});
+  const b=eo(P(t,19.4,19.65)); S('s2b',{o:b>0?1:0,s:lerp(1.6,1,b),r:lerp(12,1.2,b)});
+  $('s2hl2').style.width=(eio(P(t,20.0,20.6))*100+3)+'%'; $('s2hl2').style.opacity=P(t,20.0,20.05);
+  $('s2hl').style.width=(eio(P(t,21.52,22.2))*100+3)+'%'; $('s2hl').style.opacity=P(t,21.52,21.57);
  },
  s3(t){
-  enter($('s3k'),t,16.05,.3,40); S('s3tagx',{o:P(t,16.2,16.4)});
-  [['x1',16.3,-1],['x2',16.9,1],['x3',17.5,-1]].forEach(([id,t0,d],i)=>{
+  enter($('s3k'),t,23.1,.3,40); S('s3tagx',{o:P(t,23.3,23.5)});
+  [['x1',23.07,-1],['x2',24.24,1],['x3',25.38,-1]].forEach(([id,t0,d],i)=>{
     const p=P(t,t0,t0+.2);
-    const sp=eio(P(t,t0+.3,t0+.5)); $(id).querySelector('.strike').style.width=`calc(${sp*100}% - 40px)`;
-    const out=eio(P(t,18.6+i*.06,18.9+i*.06)); const el=$(id);
+    const sp=eio(P(t,t0+.5,t0+.75)); $(id).querySelector('.strike').style.width=`calc(${sp*100}% - 40px)`;
+    const out=eio(P(t,28.6+i*.06,28.9+i*.06)); const el=$(id);
     el.style.opacity=clamp(p*4)*(1-out)*(1-.35*sp);
     el.style.transform=`translateX(50%) rotate(${d*2*(1-out)+d*-10*out}deg) scale(${(p>0?lerp(1.8,1,eo(p)):1.8)*(1-.2*out)}) translateY(${out*80}px)`;
   });
-  enter($('ck1'),t,18.9,.3,120,eb); enter($('ck2'),t,19.2,.3,120,eb);
+  enter($('ck1'),t,29.04,.3,120,eb); enter($('ck2'),t,29.5,.3,120,eb);
  },
  s4(t){
-  const kb=P(t,20.5,25.5); $('s4img').style.transform=`scale(${1.08+kb*.18}) translate(${kb*40}px,${-kb*20}px)`;
-  S('s4arch',{o:P(t,20.5,20.7),s:lerp(1.12,1,eo(P(t,20.5,21)))});
-  S('s4label',{o:P(t,20.8,21)}); enter($('s4t'),t,20.6,.3,40);
-  [['e1',21.0],['p1',21.4],['e2',21.5],['p2',21.9],['e3',22.0],['p3',22.4],['e4',22.5]].forEach(([id,t0])=>pop($(id),t,t0,.28));
-  enter($('s4sum'),t,23.1,.3,40); $('s4fill').style.width=(eio(P(t,23.3,24.6))*100)+'%';
-  $('s4sumtxt').style.color=P(t,24.55,24.6)>0?'#F6EEDF':'#14163A';
+  const kb=P(t,31,36); $('s4img').style.transform=`scale(${1.08+kb*.18}) translate(${kb*40}px,${-kb*20}px)`;
+  S('s4arch',{o:P(t,31,31.2),s:lerp(1.12,1,eo(P(t,31,31.5)))});
+  S('s4label',{o:P(t,31.3,31.5)}); enter($('s4t'),t,31.1,.3,40);
+  [['e1',32.71],['p1',33.4],['e2',33.6],['p2',34.05],['e3',34.23],['p3',34.95],['e4',35.12]].forEach(([id,t0])=>pop($(id),t,t0,.28));
+  enter($('s4sum'),t,35.35,.2,40); $('s4fill').style.width=(eio(P(t,35.4,35.9))*100)+'%';
+  $('s4sumtxt').style.color=P(t,35.85,35.9)>0?'#F6EEDF':'#14163A';
  },
  s5(t){
-  enter($('s5k'),t,25.55,.3,40); pop($('s5year'),t,25.9,.3);
-  const c=eio(P(t,26.0,27.3)); $('s5val').textContent='+'+(12.1*c).toFixed(1);
-  S('s5num',{o:P(t,26,26.1),s:lerp(.8,1,eo(P(t,26,26.4)))+(t>27.3?Math.sin(P(t,27.3,27.6)*Math.PI)*.1:0)});
-  enter($('s5unit'),t,26.5,.3,30);
-  const r=eio(P(t,28.6,29.8)); $('s5arc').setAttribute('stroke-dasharray',`${28*r} 100`);
+  enter($('s5k'),t,36.1,.3,40); pop($('s5year'),t,36.6,.3);
+  const c=eio(P(t,37.41,38.9)); $('s5val').textContent='+'+(12.1*c).toFixed(1);
+  S('s5num',{o:P(t,37.41,37.5),s:lerp(.8,1,eo(P(t,37.41,37.8)))+(t>38.9?Math.sin(P(t,38.9,39.2)*Math.PI)*.1:0)});
+  enter($('s5unit'),t,38.2,.3,30);
+  const r=eio(P(t,40.3,41.8)); $('s5arc').setAttribute('stroke-dasharray',`${28*r} 100`);
   $('s5pct').textContent=Math.round(28*r)+'%';
-  S('s5ring',{o:P(t,28.5,28.7),s:lerp(.7,1,eb(P(t,28.5,28.9)))}); enter($('s5cap'),t,29,.3,30);
+  S('s5ring',{o:P(t,39.92,40.1),s:lerp(.7,1,eb(P(t,39.92,40.3)))}); enter($('s5cap'),t,41.6,.3,30);
  },
  s6(t){
-  const a=eo(P(t,31.55,32.0)), b=eo(P(t,31.75,32.2));
-  S('s6a',{o:P(t,31.55,31.7),y:(1-a)*300}); S('s6la',{o:P(t,31.55,31.7),y:(1-a)*300});
-  S('s6b',{o:P(t,31.75,31.9),y:(1-b)*300}); S('s6lb',{o:P(t,31.75,31.9),y:(1-b)*300});
-  S('s6la1',{o:P(t,32.1,32.3)}); S('s6lb1',{o:P(t,32.2,32.4)});
-  const kb=P(t,31.5,38); $('s6ia').style.transform=`scale(${1.1+kb*.15})`; $('s6ib').style.transform=`scale(${1.25-kb*.15}) translateX(${kb*20}px)`;
-  [['pl1',32.4],['pl2',33.2],['pl3',34.0]].forEach(([id,t0])=>{const p=P(t,t0,t0+.3);const el=$(id);el.style.opacity=clamp(p*4);el.style.transform=`translateX(50%) scale(${p>0?lerp(.4,1,eb(p)):.4})`;});
-  const bd=eio(P(t,35.2,35.5)); $('s6band').style.clipPath=`inset(${(1-bd)*50}% 0 ${(1-bd)*50}% 0)`; $('s6band').style.opacity=bd>0?1:0;
-  slam($('s6s1'),t,35.4,.2,1.8); const q=P(t,35.9,36.15); S('s6s2',{o:q>0?1:0,s:lerp(2.2,1,eo(q))});
-  S('s6star',{o:.16,r:(t-35)*14,s:lerp(.6,1.15,eo(P(t,35.2,37)))});
+  const a=eo(P(t,43.9,44.35)), b=eo(P(t,44.1,44.55));
+  S('s6a',{o:P(t,43.9,44.05),y:(1-a)*300}); S('s6la',{o:P(t,43.9,44.05),y:(1-a)*300});
+  S('s6b',{o:P(t,44.1,44.25),y:(1-b)*300}); S('s6lb',{o:P(t,44.1,44.25),y:(1-b)*300});
+  S('s6la1',{o:P(t,44.45,44.65)}); S('s6lb1',{o:P(t,44.55,44.75)});
+  const kb=P(t,43.85,52); $('s6ia').style.transform=`scale(${1.1+kb*.15})`; $('s6ib').style.transform=`scale(${1.25-kb*.15}) translateX(${kb*20}px)`;
+  [['pl1',43.95],['pl2',45.04],['pl3',46.67]].forEach(([id,t0])=>{const p=P(t,t0,t0+.3);const el=$(id);el.style.opacity=clamp(p*4);el.style.transform=`translateX(50%) scale(${p>0?lerp(.4,1,eb(p)):.4})`;});
+  const bd=eio(P(t,48.4,48.7)); $('s6band').style.clipPath=`inset(${(1-bd)*50}% 0 ${(1-bd)*50}% 0)`; $('s6band').style.opacity=bd>0?1:0;
+  slam($('s6s1'),t,48.6,.2,1.8); const q=P(t,50.17,50.4); S('s6s2',{o:q>0?1:0,s:lerp(2.2,1,eo(q))});
+  S('s6star',{o:.16,r:(t-48)*14,s:lerp(.6,1.15,eo(P(t,48.4,51)))});
  },
- s7(t){ enter($('s7in'),t,38.1,.4,40); }
+ s7(t){ enter($('s7in'),t,52.1,.4,40); }
 };
 
 let lastScene=null;
@@ -412,13 +411,13 @@ function renderAt(t){
   const dark=['s0','s4','s5','s7'].includes(SEG[cur][2]);
   const hc=dark?'#F6EEDF':'#14163A'; $('brand').style.color=hc; $('counter').style.color=hc;
   $('counter').textContent='';
-  $('progbar').style.width=(clamp(t/38)*100)+'%';
-  $('header').style.opacity=cur===7?1-P(t,38,38.2):1;
+  $('progbar').style.width=(clamp(t/MAIN_END)*100)+'%';
+  $('header').style.opacity=cur===7?1-P(t,52,52.2):1;
   // captions
   const c=CAPS.find(c=>t>=c.a&&t<c.b); const card=$('capcard');
   if(c){
     if(card.dataset.text!==c.text){card.dataset.text=c.text;card.innerHTML=c.text.split(' ').map(w=>`<span>${w}</span>`).join(' ');}
-    const spans=card.children; const n=spans.length; const stg=Math.min(.06,(c.b-c.a)*.3/n);
+    const spans=card.children; const n=spans.length; const stg=(c.b-c.a)*.8/n;
     for(let i=0;i<n;i++){const p=eo(P(t,c.a+i*stg,c.a+i*stg+.18));spans[i].style.opacity=p;spans[i].style.transform=`translateY(${(1-p)*14}px)`;}
     card.style.opacity=1-P(t,c.b-.08,c.b); card.style.visibility='visible';
     $('caption').style.transform=`scale(${lerp(.9,1,eb(P(t,c.a,c.a+.2)))})`;

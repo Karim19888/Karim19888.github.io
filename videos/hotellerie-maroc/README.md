@@ -1,10 +1,11 @@
 # مرحبا بيك… حتى بالدرهم — vidéo motion design (hôtellerie Maroc)
 
-- **Reel (version principale)** : `marhba-bik-reel.mp4` — 1080×1920, 30 fps, **42 s**, H.264 + AAC.
+- **Reel avec voix off (version principale)** : `marhba-bik-reel-voix.mp4` — 1080×1920, 30 fps, **56 s**, voix ElevenLabs v4 (`assets/audio/voix_off_v4.mp3`) + musique baissée sous la voix, -14 LUFS.
+- **Reel sans voix (42 s)** : `marhba-bik-reel.mp4` (ancien calage, la composition actuelle suit la voix).
 - **Version longue (v1, 86 s)** : `marhba-bik-version-longue.mp4` (archive, la composition actuelle produit le Reel).
 - **Aperçu web** : `index.html` · `composition.html?play` · `composition.html?t=2.5`.
 
-## Structure du Reel
+## Structure du Reel (temps de la version 42 s sans voix ; la version voix suit les phrases de la voix off)
 
 | Temps | Beat | Visuel |
 |---|---|---|
@@ -39,5 +40,11 @@ node render.mjs frames /tmp/frames 30 6       # 1260 images
 python3 music.py /tmp/music.wav               # musique (numpy)
 ffmpeg -framerate 30 -i /tmp/frames/f%05d.jpg -i /tmp/music.wav \
   -c:v libx264 -preset slow -crf 20 -pix_fmt yuv420p -c:a aac -b:a 192k \
-  -shortest -movflags +faststart marhba-bik-reel.mp4
+  -shortest -movflags +faststart marhba-bik-reel.mp4   # sans voix
+
+# avec voix off : musique baissée sous la voix, puis mix à -14 LUFS
+ffmpeg -i /tmp/music.wav -i assets/audio/voix_off_v4.mp3 -filter_complex \
+ "[1:a]aresample=44100,pan=stereo|c0=c0|c1=c0,loudnorm=I=-16:TP=-2:LRA=9,apad=whole_dur=56,asplit=2[v][sc];\
+  [0:a]volume=-7dB[m];[m][sc]sidechaincompress=threshold=0.03:ratio=8:attack=15:release=350[md];\
+  [md][v]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11" /tmp/mix.wav
 ```
