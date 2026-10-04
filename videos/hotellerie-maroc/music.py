@@ -5,10 +5,10 @@ import sys, wave
 import numpy as np
 
 SR = 44100
-DUR = 86.0
-BPM = 96
+DUR = 42.0
+BPM = 120
 BEAT = 60 / BPM
-BOUNDS = [9, 19, 32, 43, 55, 68, 80]
+BOUNDS = [4.6, 11, 16, 20.5, 25.5, 31.5, 38]
 rng = np.random.default_rng(7)
 N = int(SR * DUR)
 L = np.zeros(N); R = np.zeros(N)
@@ -89,59 +89,57 @@ def boom(gain=1.0):
     s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 1.8)
     return s * gain
 
-# ---------------- arrangement ----------------
-# Drone continu (Ré + La)
-for t0, t1, g in [(0, 9, 0.22), (9, 55, 0.14), (55, 68, 0.18), (68, 86, 0.16)]:
-    add(pad([hz(-12), hz(-5)], t1 - t0 + 1.5, a=1.2, rel=2.0), t0, g)
+# ---------------- arrangement (Reel ~42 s, 120 BPM) ----------------
+for t0, t1, g in [(0, 4.6, 0.2), (4.6, 25.5, 0.12), (25.5, 31.5, 0.16), (31.5, 42, 0.15)]:
+    add(pad([hz(-12), hz(-5)], t1 - t0 + 1.0, a=0.3, rel=1.0), t0, g)
 
-# Hook: cluster tendu Ré/Mi bémol + motif Hijaz épars
-add(pad([hz(0), hz(1), hz(4)], 9.5, a=2.5, rel=1.0), 0, 0.10)
-for t, d in [(0.4, 0), (1.0, 1), (1.6, 4), (2.7, 7), (3.3, 8), (4.2, 7), (5.0, 4), (5.6, 1), (6.5, 0), (7.4, 12)]:
-    add(pluck(hz(d), 2.0), t, 0.55, pan=-0.2 + 0.05 * d)
-add(dum(1.0), 0.4, 0.8); add(dum(1.0), 2.65, 1.0); add(boom(0.6), 6.5, 0.6)
+# Hook: 3 impacts + stamp, cluster tendu
+add(pad([hz(0), hz(1), hz(4)], 4.8, a=0.2, rel=0.4), 0, 0.12)
+for i, h in enumerate([0, 0.6, 1.2]):
+    add(dum(1.0), h, 1.0); add(boom(0.5), h, 0.35); add(pluck(hz([0, 1, 4][i] + 12), 0.8, bright=0.9), h, 0.6)
+add(whoosh(0.5, 0.4), 1.4, 1.0)
+add(boom(1.0), 2.45, 0.9); add(tek(0.9), 2.45, 0.9)
+for k, d in enumerate([7, 8, 7, 4, 1, 0]):
+    add(pluck(hz(d), 1.0), 2.8 + k * 0.25, 0.5, pan=-0.3 + 0.1 * k)
 
-# Groove principal 9 -> 80 (allégé 55-68)
+# Groove 4.6 -> 38 (allégé pendant les chiffres)
 ARP = [0, 4, 5, 7, 8, 7, 5, 4, 0, 4, 7, 12, 10, 8, 7, 4]
-t = 9.0; step = 0
-while t < 80:
-    beat_pos = step % 8  # croches
-    light = 55 <= t < 68
-    if beat_pos in (0, 3) and not light: add(dum(1.0), t, 0.75)
-    if beat_pos == 4: add(dum(0.8), t, 0.55 if not light else 0.4)
+t = 4.6; step = 0
+while t < 38:
+    beat_pos = step % 8
+    light = 25.5 <= t < 28.6
+    if beat_pos in (0, 3, 5) and not light: add(dum(1.0), t, 0.75)
+    if beat_pos == 4: add(dum(0.8), t, 0.5)
     if beat_pos in (2, 6, 7) and not light: add(tek(), t, 0.5, pan=0.3)
-    if t >= 19: add(shaker(), t, 1.0, pan=-0.4); add(shaker(0.07), t + BEAT / 4, 1.0, pan=-0.4)
-    # oud: arpège en croches
-    semi = ARP[step % 16] + (12 if t >= 68 and step % 2 == 0 else 0)
-    if not (t < 19 and step % 2):
-        add(pluck(hz(semi), 1.3, bright=0.7 if t < 68 else 0.9), t, 0.33, pan=0.25 if step % 2 else -0.25)
-    # basse sur chaque temps fort
+    add(shaker(), t, 1.0, pan=-0.4); add(shaker(0.07), t + BEAT / 4, 1.0, pan=-0.4)
+    semi = ARP[step % 16] + (12 if t >= 31.5 and step % 2 == 0 else 0)
+    add(pluck(hz(semi), 0.9, bright=0.75 if t < 31.5 else 0.9), t, 0.32, pan=0.25 if step % 2 else -0.25)
     if beat_pos == 0:
-        add(pluck(hz(-12 + (5 if (step // 16) % 4 == 2 else 0), 146.83), 1.8, bright=0.3, decay=0.998), t, 0.6)
+        add(pluck(hz(-12 + (5 if (step // 16) % 4 == 2 else 0), 146.83), 1.2, bright=0.3, decay=0.998), t, 0.6)
     t += BEAT / 2; step += 1
 
-# Section chiffres: nappe qui s'éclaircit (Ré majeur) + motif ascendant
-add(pad([hz(0), hz(4), hz(7)], 13.5, a=2.0, rel=1.5), 55, 0.12)
-for i, d in enumerate([0, 4, 7, 12, 16, 19]):
-    add(pluck(hz(d), 1.5, bright=0.9), 57 + i * 0.58, 0.45)
-add(boom(0.5), 61.2, 0.5)
-
-# Conclusion: nappe chaleureuse + accent slogan
-add(pad([hz(0), hz(7), hz(12), hz(16)], 18, a=2.0, rel=4.0), 68, 0.12)
-add(boom(1.0), 75.6, 0.9)
-sw = whoosh(1.6, 0.4); add(sw, 74.4, 1.0)
+# Accents synchronisés
+for h in [8.7, 11.3, 13.1, 16.3, 16.9, 17.5, 28.6]:
+    add(tek(0.8), h, 0.7); add(dum(0.9), h, 0.6)
+add(boom(0.8), 14.6, 0.7)
+for i, d in enumerate([0, 4, 7, 12, 16]):
+    add(pluck(hz(d), 1.0, bright=0.9), 26.0 + i * 0.26, 0.45)
+add(boom(0.6), 27.3, 0.5)
+add(pad([hz(0), hz(7), hz(12), hz(16)], 10, a=1.0, rel=3.0), 31.5, 0.12)
+add(whoosh(1.0, 0.4), 34.3, 1.0); add(boom(1.0), 35.2, 1.0)
 for i, d in enumerate([12, 16, 19, 24]):
-    add(pluck(hz(d), 2.5, bright=0.9, decay=0.998), 76.2 + i * 0.22, 0.4, pan=-0.3 + 0.2 * i)
+    add(pluck(hz(d), 2.0, bright=0.9, decay=0.998), 35.9 + i * 0.15, 0.4, pan=-0.3 + 0.2 * i)
 for i, d in enumerate([0, 7, 12, 16, 19]):
-    add(pluck(hz(d), 3.5, bright=0.6, decay=0.999), 80.2 + i * 0.35, 0.35, pan=-0.4 + 0.2 * i)
+    add(pluck(hz(d), 3.0, bright=0.6, decay=0.999), 38.1 + i * 0.3, 0.35, pan=-0.4 + 0.2 * i)
 
 # Transitions
 for b in BOUNDS:
-    add(whoosh(0.8, 0.3), b - 0.45, 1.0, pan=0.5)
-    add(whoosh(0.8, 0.3), b - 0.4, 1.0, pan=-0.5)
+    add(whoosh(0.45, 0.3), b - 0.3, 1.0, pan=0.5)
+    add(whoosh(0.45, 0.3), b - 0.28, 1.0, pan=-0.5)
 
 # ---------------- master ----------------
 tt = np.arange(N) / SR
-fade = np.clip(tt / 0.3, 0, 1) * np.clip((DUR - tt) / 3.5, 0, 1)
+fade = np.clip(tt / 0.3, 0, 1) * np.clip((DUR - tt) / 2.5, 0, 1)
 mix = np.stack([L, R], 1) * fade[:, None]
 mix = np.tanh(mix * 1.4) / np.tanh(1.4)  # saturation douce
 mix /= np.max(np.abs(mix)) / 0.89

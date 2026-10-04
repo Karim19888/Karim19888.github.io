@@ -30,7 +30,7 @@
   /* captions */
   #caption{position:absolute;left:60px;right:60px;top:1500px;min-height:230px;z-index:40;display:flex;align-items:center;justify-content:center}
   #capcard{background:rgba(13,14,38,.92);border-right:10px solid var(--saffron);border-radius:28px;padding:30px 44px;
-    font-size:52px;font-weight:700;line-height:1.55;text-align:center;color:var(--cream);box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:960px}
+    font-size:50px;font-weight:800;line-height:1.5;text-align:center;color:var(--cream);box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:960px}
   #capcard span{display:inline-block;margin:0 6px}
 
   #footer{position:absolute;left:60px;right:60px;bottom:70px;height:60px;z-index:45;font-size:28px;font-weight:600;text-align:center;display:flex;align-items:center;justify-content:center}
@@ -84,23 +84,32 @@
   </defs>
 </svg>
 
-<!-- ============ S0 HOOK ============ -->
-<section class="scene" id="s0" style="background:var(--ink)">
-  <div class="pattern" data-pat="cream"></div>
-  <div class="arch" id="s0arch" style="left:160px;top:250px;width:760px;height:1150px">
-    <img src="assets/img/P04.jpg" id="s0img" style="filter:blur(7px) saturate(.55) brightness(.75)">
-    <div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(20,22,58,.15),rgba(20,22,58,.85));mix-blend-mode:multiply"></div>
+<!-- ============ S0 HOOK (Reel) ============ -->
+<div id="stage" class="abs" style="inset:0">
+<section class="scene" id="s0" style="background:var(--night)">
+  <div class="abs" id="h_bgwrap" style="inset:0;overflow:hidden">
+    <img src="assets/img/P04.jpg" id="h_bg" class="abs" style="inset:0;width:100%;height:100%;object-fit:cover;filter:blur(9px) saturate(.6) brightness(.55)">
+    <div class="abs" style="inset:0;background:radial-gradient(circle at 50% 45%,rgba(13,14,38,.1),rgba(13,14,38,.85))"></div>
   </div>
-  <svg class="archline" id="s0line" style="left:160px;top:250px;width:760px;height:1150px" viewBox="0 0 1 1" preserveAspectRatio="none">
-    <path d="M0,1 L0,0.36 C0,0.16 0.24,0.035 0.5,0 C0.76,0.035 1,0.16 1,0.36 L1,1" fill="none" stroke="#E8A93A" stroke-width="6" vector-effect="non-scaling-stroke" pathLength="1" stroke-dasharray="1" id="s0path"/>
-  </svg>
-  <div class="label" id="s0label" style="left:200px;top:1330px">صورة توضيحية · أرشيف 2023</div>
-  <div class="abs kufi" id="s0t1" style="left:0;right:0;top:620px;text-align:center;font-size:140px;font-weight:700;text-shadow:0 10px 40px rgba(0,0,0,.5)">نفس الفندق…</div>
-  <div class="abs" id="s0t2" style="left:0;right:0;top:820px;text-align:center">
-    <span style="display:inline-block;background:var(--saffron);color:var(--ink);font-size:110px;font-weight:900;padding:0 46px;border-radius:24px" id="s0t2in">ثمن مختلف</span>
+  <div class="abs kufi" id="h_slam" style="left:0;right:0;top:700px;text-align:center;font-size:190px;font-weight:700;line-height:1.1;text-shadow:0 14px 50px rgba(0,0,0,.7)"></div>
+  <div class="abs" id="h_top" style="left:50px;right:50px;top:230px;height:560px;border-radius:34px;overflow:hidden">
+    <img src="assets/img/P04.jpg" class="abs" id="h_ti" style="inset:0;width:100%;height:100%;object-fit:cover;filter:blur(8px) saturate(.5) brightness(.7)">
+    <div class="abs" style="inset:0;background:linear-gradient(90deg,rgba(61,79,209,.85),rgba(61,79,209,.35))"></div>
+    <div class="abs" style="right:50px;top:60px;font-size:84px;font-weight:900">هو</div>
+    <div class="abs" style="right:50px;top:180px;font-size:46px;font-weight:700;opacity:.92">جاي من أوروبا</div>
+    <div class="abs" id="h_pa" style="left:60px;top:150px;width:300px;height:300px;border-radius:50%;background:var(--cream);color:var(--majorelle);display:flex;align-items:center;justify-content:center;font-size:96px;font-weight:900"><span class="ltr">?? €</span></div>
   </div>
-  <div class="tag" id="tagA" style="left:250px;top:1030px"><div class="string"></div><div class="body" style="background:var(--majorelle)"><span class="ltr">€</span></div><div class="hole"></div></div>
-  <div class="tag" id="tagB" style="left:640px;top:1030px"><div class="string"></div><div class="body" style="background:var(--green);font-size:60px">درهم</div><div class="hole"></div></div>
+  <div class="abs" id="h_bot" style="left:50px;right:50px;top:830px;height:560px;border-radius:34px;overflow:hidden">
+    <img src="assets/img/P04.jpg" class="abs" style="inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:blur(8px) saturate(.5) brightness(.7)">
+    <div class="abs" style="inset:0;background:linear-gradient(90deg,rgba(30,107,78,.88),rgba(30,107,78,.35))"></div>
+    <div class="abs" style="right:50px;top:60px;font-size:84px;font-weight:900">نتا</div>
+    <div class="abs" style="right:50px;top:180px;font-size:46px;font-weight:700;opacity:.92">ساكن فالمغرب</div>
+    <div class="abs" id="h_pb" style="left:60px;top:150px;width:300px;height:300px;border-radius:50%;background:var(--cream);color:var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:96px;font-weight:900;line-height:1"><span class="ltr">??</span><span style="font-size:52px">درهم</span></div>
+  </div>
+  <div class="abs" id="h_stamp" style="left:0;right:0;top:720px;text-align:center;z-index:5">
+    <span style="display:inline-block;background:var(--saffron);color:var(--ink);font-size:120px;font-weight:900;padding:4px 50px;border-radius:26px;box-shadow:0 20px 60px rgba(0,0,0,.5)">ثمن مختلف؟</span>
+  </div>
+  <div class="label" id="h_label" style="left:70px;top:1405px;font-size:22px">صور توضيحية · أرشيف 2023</div>
 </section>
 
 <!-- ============ S1 ============ -->
@@ -248,6 +257,8 @@
   </div>
 </section>
 
+</div>
+<div id="flash" class="abs" style="inset:0;background:#fff;opacity:0;z-index:70;pointer-events:none"></div>
 <!-- persistent -->
 <div id="header">
   <div id="brand"><svg viewBox="-50 -50 100 100"><polygon class="star16" fill="#E8A93A"/></svg><span class="kufi">مرحبا بيك… حتى بالدرهم</span></div>
@@ -272,25 +283,34 @@ function patternURL(color){
 const PC={cream:'#F6EEDF',ink:'#14163A',saffron:'#E8A93A'};
 document.querySelectorAll('.pattern').forEach(e=>e.style.backgroundImage=patternURL(PC[e.dataset.pat]||'#F6EEDF'));
 
-// ---------- timeline ----------
-const SEG=[ // [start,end,sceneId,captionChunks,source]
- [0,9,'s0',['نفس الفندق…','اللي جاي من أوروبا يقدر يحجز أرخص منك، ونتا ساكن فالمغرب.','والمفارقة ما كتوقفش فالثمن.'],''],
- [9,19,'s1',['وكالات الأسفار كتفاوض على حجوزات بالجملة، وكتاخد تخفيضات.','هادي كتفسّر بعض الفروقات،','ولكن ما كتفسّرش فرق المعاملة.'],'المصدر: Hespress · 18/08/2025'],
- [19,32,'s2',['جمعيات حماية المستهلك سبق نبهات لشكايات ديال مغاربة','على تفضيل الأجانب عند بعض الفنادق.','وحتى مهنيين فالقطاع أكدو أن هاد الممارسات موجودة عند البعض.'],'مصادر: Hespress EN · Hespress — 2025'],
- [32,43,'s3',['الزبون المغربي جاي يخلص ويرتاح.','ترحيب بارد، خدمة ناقصة، ولا مصاريف كيتفاجأ بها…','هادو ماشي تفاصيل صغيرة فالعطلة.'],'رأي تحريري'],
- [43,55,'s4',['وفاتورة العائلة فيها الفندق، الطريق، الماكلة ومصاريف الدراري.','عرض مناسب للعائلة خاصو يتحسب على هاد الميزانية كاملة.'],''],
- [55,68,'s5',['والمغربي عندو وزن:','فـ2025، السياحة الداخلية مثّلات حوالي 28 فالمية من ليالي المبيت السياحية.','أكثر من 12 مليون ليلة.'],'ONMT'],
- [68,80,'s6',['إلى بغينا المغربي يسافر فبلادو،','خاص عروض واضحة، خدمة تستاهل الثمن، ونفس الاحترام للجميع.','مرحبا بيك خاصها تخدم حتى بالدرهم.'],''],
- [80,86,'s7',[],'']
+// ---------- timeline (Reel ~42 s) ----------
+const SEG=[ // [start,end,sceneId,source]
+ [0,4.6,'s0',''],
+ [4.6,11,'s1','المصدر: Hespress · 18/08/2025'],
+ [11,16,'s2','مصادر: Hespress EN · Hespress — 2025'],
+ [16,20.5,'s3','رأي تحريري · أمثلة توضيحية'],
+ [20.5,25.5,'s4',''],
+ [25.5,31.5,'s5','ONMT'],
+ [31.5,38,'s6',''],
+ [38,42,'s7','']
 ];
-const DURATION=86; window.DURATION=DURATION;
-// caption schedule
-const CAPS=[];
-SEG.forEach(([a,b,,chunks])=>{
-  if(!chunks.length)return;
-  const pad=.3, avail=(b-a)-pad*2; const tot=chunks.reduce((s,c)=>s+c.length+12,0);
-  let t=a+pad; chunks.forEach(c=>{const d=avail*(c.length+12)/tot;CAPS.push({a:t,b:t+d,text:c});t+=d;});
-});
+const DURATION=42; window.DURATION=DURATION;
+const CAPS=[
+ {a:1.9,b:4.55,text:'اللي جاي من أوروبا يقدر يحجز أرخص منك… ونتا ساكن فالمغرب.'},
+ {a:4.7,b:7.9,text:'وكالات الأسفار كتفاوض على حجوزات بالجملة وكتاخد تخفيضات.'},
+ {a:8.0,b:10.95,text:'هادي كتفسّر بعض الفروقات… ولكن ماشي فرق المعاملة.'},
+ {a:11.1,b:13.5,text:'جمعيات المستهلك نبهات لشكايات على تفضيل الأجانب عند بعض الفنادق.'},
+ {a:13.5,b:15.95,text:'ومهنيين فالقطاع أكدو أن هاد الممارسات موجودة عند البعض.'},
+ {a:16.1,b:20.45,text:'الزبون المغربي جاي يخلص ويرتاح… هادو ماشي تفاصيل صغيرة.'},
+ {a:20.6,b:25.45,text:'عرض العائلة خاصو يتحسب على الميزانية كاملة: الفندق، الطريق، الماكلة والدراري.'},
+ {a:25.6,b:28.6,text:'فـ2025، السياحة الداخلية: أكثر من 12 مليون ليلة مبيت.'},
+ {a:28.6,b:31.45,text:'يعني حوالي 28% من ليالي المبيت السياحية.'},
+ {a:31.6,b:35.1,text:'خاص عروض واضحة، خدمة تستاهل الثمن، ونفس الاحترام للجميع.'}
+];
+// impacts: [time, flash strength, shake px]
+const HITS=[[0,.9,26],[.6,.7,22],[1.2,.7,22],[1.8,.5,16],[2.45,.8,30],[4.6,.6,10],[8.7,.4,24],[11,.6,10],[11.3,0,14],[13.1,0,14],[14.6,.3,26],
+ [16,.6,10],[16.3,0,12],[16.9,0,12],[17.5,0,12],[20.5,.6,10],[25.5,.6,10],[28.6,0,18],[31.5,.6,10],[35.2,.8,30],[38,.5,0]];
+const SLAMS=[['نفس الفندق',0],['نفس البيت',.6],['نفس الليلة',1.2]];
 
 // ---------- helpers ----------
 const $=id=>document.getElementById(id);
@@ -300,127 +320,119 @@ const eo=x=>1-Math.pow(1-x,3), eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
 const lerp=(a,b,x)=>a+(b-a)*x;
 function S(el,{o=1,x=0,y=0,s=1,r=0,extra=''}={}){if(typeof el==='string')el=$(el);el.style.opacity=o;el.style.transform=`translate(${x}px,${y}px) scale(${s}) rotate(${r}deg) ${extra}`;}
-// standard entrance: from y offset, fade
-function enter(el,t,t0,dur=.6,dy=60,ease=eo){const p=ease(P(t,t0,t0+dur));S(el,{o:P(t,t0,t0+dur*.6),y:(1-p)*dy});return p}
-function pop(el,t,t0,dur=.5){const p=P(t,t0,t0+dur);S(el,{o:clamp(p*3),s:p>0?lerp(.6,1,eb(p)):.6});return p}
+function enter(el,t,t0,dur=.35,dy=60,ease=eo){const p=ease(P(t,t0,t0+dur));S(el,{o:P(t,t0,t0+dur*.5),y:(1-p)*dy});return p}
+function pop(el,t,t0,dur=.3){const p=P(t,t0,t0+dur);S(el,{o:clamp(p*4),s:p>0?lerp(.4,1,eb(p)):.4});return p}
+function slam(el,t,t0,dur=.18,from=1.8){const p=P(t,t0,t0+dur);S(el,{o:p>0?1:0,s:lerp(from,1,eo(p))});return p}
 
-// ---------- scene updaters (lt = local time) ----------
+// ---------- scene updaters ----------
 const U={
  s0(t){
-  const kb=P(t,0,9); $('s0img').style.transform=`scale(${1.15+kb*.12}) translateX(${-kb*20}px)`;
-  $('s0path').style.strokeDashoffset=1-eio(P(t,0,1.4));
-  S('s0arch',{o:P(t,0,.6),s:lerp(1.04,1,eo(P(t,0,1.2)))});
-  S('s0label',{o:P(t,1.2,1.8)});
-  const p1=eo(P(t,.4,1.1)); S('s0t1',{o:P(t,.4,.9),y:(1-p1)*50,s:lerp(1.15,1,p1)});
-  const p2=P(t,2.6,3.2); S('s0t2',{o:clamp(p2*3),s:p2>0?lerp(.5,1,eb(p2)):.5,r:lerp(-6,-2,eo(p2))});
-  // swinging tags
-  [['tagA',3.4,1],['tagB',3.7,-1]].forEach(([id,t0,dir])=>{
-    const lt=t-t0; const drop=eo(P(t,t0,t0+.5));
-    const sw=lt>0?dir*22*Math.exp(-lt*.9)*Math.cos(lt*5.2)+dir*3*Math.sin(lt*1.3):dir*22;
-    S(id,{o:P(t,t0,t0+.3),y:(1-drop)*-140,r:sw});
-  });
-  // emphasis at "المفارقة"
-  const e=P(t,6.5,7.1); const pulse=Math.sin(e*Math.PI)*.08;
-  $('s0t2in').style.transform=`scale(${1+pulse})`;
+  // punch-zoom on the background at every slam
+  let z=1.12; for(const [,h] of SLAMS){ if(t>=h) z=1.12+.18*(1-eo(P(t,h,h+.35))) + h*.05; }
+  $('h_bg').style.transform=`scale(${z})`;
+  const cur=SLAMS.filter(s=>t>=s[1]).pop(); const el=$('h_slam');
+  if(cur && t<1.8){ if(el.dataset.w!==cur[0]){el.dataset.w=cur[0];const [w1,w2]=cur[0].split(' ');el.innerHTML=`${w1} <span style="color:#E8A93A">${w2}</span>`;} slam(el,t,cur[1],.16,2.2); } else el.style.opacity=0;
+  $('h_bgwrap').style.opacity=t<1.8?1:1-P(t,1.8,2.0);
+  const a=eo(P(t,1.8,2.1)), b=eo(P(t,1.9,2.2));
+  S('h_top',{o:P(t,1.8,1.9),x:(1-a)*1100}); S('h_bot',{o:P(t,1.9,2.0),x:(1-b)*-1100});
+  $('h_ti').style.transform=`scale(${1.1+P(t,1.8,4.6)*.1})`;
+  pop($('h_pa'),t,2.15,.3); pop($('h_pb'),t,2.25,.3);
+  const st=P(t,2.45,2.62); S('h_stamp',{o:st>0?1:0,s:lerp(2.6,1,eo(st))+Math.sin(Math.max(0,t-3.4)*6)*.03*(t>3.4),r:-4});
+  S('h_label',{o:P(t,2.2,2.5)});
  },
  s1(t){
-  enter($('s1t1'),t,9.2,.6,40); enter($('s1t2'),t,13.6,.6,40);
-  const c1=eo(P(t,9.6,10.3)); S('s1c1',{o:P(t,9.6,10),x:(1-c1)*-700});
-  const c2=eo(P(t,13.8,14.5)); S('s1c2',{o:P(t,13.8,14.2),x:(1-c2)*700});
-  const n=P(t,15.6,16.1); S('s1neq',{o:clamp(n*3),s:n>0?lerp(.3,1,eb(n))+Math.sin(Math.max(0,t-16.1)*4)*.04:.3});
+  enter($('s1t1'),t,4.7,.3,40); enter($('s1t2'),t,8.1,.3,40);
+  const c1=eo(P(t,4.75,5.1)); S('s1c1',{o:P(t,4.75,4.9),x:(1-c1)*-900});
+  const c2=eo(P(t,8.2,8.5)); S('s1c2',{o:P(t,8.2,8.35),x:(1-c2)*900});
+  const n=P(t,8.7,8.9); S('s1neq',{o:n>0?1:0,s:lerp(3,1,eo(n))+Math.sin(Math.max(0,t-8.9)*5)*.05});
  },
  s2(t){
-  enter($('s2t'),t,19.2,.6,40);
-  const a=eo(P(t,19.6,20.4)); S('s2a',{o:P(t,19.6,20),x:(1-a)*900,r:lerp(-8,-1.5,a)});
-  $('s2hl').style.width=(eio(P(t,22.3,23.3))*100+3)+'%'; $('s2hl').style.opacity=P(t,22.3,22.4);
-  const b=eo(P(t,25.2,26)); S('s2b',{o:P(t,25.2,25.6),x:(1-b)*-900,r:lerp(8,1.2,b)});
-  $('s2hl2').style.width=(eio(P(t,27,28))*100+3)+'%'; $('s2hl2').style.opacity=P(t,27,27.1);
-  const st=P(t,28.6,29); S('s2stamp',{o:st>0?1:0,s:lerp(2.4,1,eio(st)),r:-14});
+  enter($('s2t'),t,11.05,.3,40);
+  const a=eo(P(t,11.3,11.55)); S('s2a',{o:a>0?1:0,s:lerp(1.6,1,a),r:lerp(-12,-1.5,a)});
+  $('s2hl').style.width=(eio(P(t,11.9,12.5))*100+3)+'%'; $('s2hl').style.opacity=P(t,11.9,11.95);
+  const b=eo(P(t,13.1,13.35)); S('s2b',{o:b>0?1:0,s:lerp(1.6,1,b),r:lerp(12,1.2,b)});
+  $('s2hl2').style.width=(eio(P(t,13.7,14.3))*100+3)+'%'; $('s2hl2').style.opacity=P(t,13.7,13.75);
+  const st=P(t,14.6,14.78); S('s2stamp',{o:st>0?1:0,s:lerp(2.8,1,eio(st)),r:-14});
  },
  s3(t){
-  enter($('s3k'),t,32.2,.6,40); S('s3tagx',{o:P(t,33,33.5)});
-  [['x1',34.2,-1],['x2',35.1,1],['x3',36,-1]].forEach(([id,t0,d],i)=>{
-    const p=pop($(id),t,t0,.45);
-    const sp=eio(P(t,t0+.8,t0+1.2)); $(id).querySelector('.strike').style.width=`calc(${sp*100}% - 40px)`;
-    const out=eio(P(t,38.2+i*.12,38.8+i*.12)); const el=$(id);
-    el.style.opacity=clamp(p*3)*(1-out)*(1-.35*sp);
-    el.style.transform=`translateX(50%) rotate(${d*2*(1-out)+d*-10*out}deg) scale(${(p>0?lerp(.6,1,eb(p)):.6)*(1-.2*out)}) translateY(${out*80}px)`;
+  enter($('s3k'),t,16.05,.3,40); S('s3tagx',{o:P(t,16.2,16.4)});
+  [['x1',16.3,-1],['x2',16.9,1],['x3',17.5,-1]].forEach(([id,t0,d],i)=>{
+    const p=P(t,t0,t0+.2);
+    const sp=eio(P(t,t0+.3,t0+.5)); $(id).querySelector('.strike').style.width=`calc(${sp*100}% - 40px)`;
+    const out=eio(P(t,18.6+i*.06,18.9+i*.06)); const el=$(id);
+    el.style.opacity=clamp(p*4)*(1-out)*(1-.35*sp);
+    el.style.transform=`translateX(50%) rotate(${d*2*(1-out)+d*-10*out}deg) scale(${(p>0?lerp(1.8,1,eo(p)):1.8)*(1-.2*out)}) translateY(${out*80}px)`;
   });
-  enter($('ck1'),t,38.9,.6,120,eb); enter($('ck2'),t,39.5,.6,120,eb);
+  enter($('ck1'),t,18.9,.3,120,eb); enter($('ck2'),t,19.2,.3,120,eb);
  },
  s4(t){
-  const kb=P(t,43,55); $('s4img').style.transform=`scale(${1.08+kb*.14}) translate(${kb*30}px,${-kb*15}px)`;
-  S('s4arch',{o:P(t,43,43.6),s:lerp(1.05,1,eo(P(t,43,44.2)))});
-  S('s4label',{o:P(t,43.8,44.3)}); enter($('s4t'),t,43.6,.6,40);
-  [['e1',44.6],['p1',45.4],['e2',45.6],['p2',46.5],['e3',46.7],['p3',47.6],['e4',47.8]].forEach(([id,t0])=>pop($(id),t,t0,.5));
-  enter($('s4sum'),t,49.6,.5,40); $('s4fill').style.width=(eio(P(t,50,53))*100)+'%';
-  $('s4sumtxt').style.color=P(t,51.2,51.5)>0?'#F6EEDF':'#14163A';
+  const kb=P(t,20.5,25.5); $('s4img').style.transform=`scale(${1.08+kb*.18}) translate(${kb*40}px,${-kb*20}px)`;
+  S('s4arch',{o:P(t,20.5,20.7),s:lerp(1.12,1,eo(P(t,20.5,21)))});
+  S('s4label',{o:P(t,20.8,21)}); enter($('s4t'),t,20.6,.3,40);
+  [['e1',21.0],['p1',21.4],['e2',21.5],['p2',21.9],['e3',22.0],['p3',22.4],['e4',22.5]].forEach(([id,t0])=>pop($(id),t,t0,.28));
+  enter($('s4sum'),t,23.1,.3,40); $('s4fill').style.width=(eio(P(t,23.3,24.6))*100)+'%';
+  $('s4sumtxt').style.color=P(t,24.55,24.6)>0?'#F6EEDF':'#14163A';
  },
  s5(t){
-  enter($('s5k'),t,55.3,.6,40); pop($('s5year'),t,56.3,.5);
-  const c=eio(P(t,57,60.5)); $('s5val').textContent='+'+(12.1*c).toFixed(1);
-  S('s5num',{o:P(t,57,57.3),s:lerp(.85,1,eo(P(t,57,58)))+(t>60.5?Math.sin(P(t,60.5,61)*Math.PI)*.06:0)});
-  enter($('s5unit'),t,58,.6,30);
-  const r=eio(P(t,61.2,63.8)); $('s5arc').setAttribute('stroke-dasharray',`${28*r} 100`);
+  enter($('s5k'),t,25.55,.3,40); pop($('s5year'),t,25.9,.3);
+  const c=eio(P(t,26.0,27.3)); $('s5val').textContent='+'+(12.1*c).toFixed(1);
+  S('s5num',{o:P(t,26,26.1),s:lerp(.8,1,eo(P(t,26,26.4)))+(t>27.3?Math.sin(P(t,27.3,27.6)*Math.PI)*.1:0)});
+  enter($('s5unit'),t,26.5,.3,30);
+  const r=eio(P(t,28.6,29.8)); $('s5arc').setAttribute('stroke-dasharray',`${28*r} 100`);
   $('s5pct').textContent=Math.round(28*r)+'%';
-  S('s5ring',{o:P(t,61,61.4),s:lerp(.8,1,eo(P(t,61,61.8)))}); enter($('s5cap'),t,62,.6,30);
+  S('s5ring',{o:P(t,28.5,28.7),s:lerp(.7,1,eb(P(t,28.5,28.9)))}); enter($('s5cap'),t,29,.3,30);
  },
  s6(t){
-  const a=eo(P(t,68.2,69.2)), b=eo(P(t,68.6,69.6));
-  S('s6a',{o:P(t,68.2,68.6),y:(1-a)*200}); S('s6la',{o:P(t,68.2,68.6),y:(1-a)*200});
-  S('s6b',{o:P(t,68.6,69),y:(1-b)*200}); S('s6lb',{o:P(t,68.6,69),y:(1-b)*200});
-  S('s6la1',{o:P(t,69.4,69.9)}); S('s6lb1',{o:P(t,69.6,70.1)});
-  const kb=P(t,68,80); $('s6ia').style.transform=`scale(${1.1+kb*.12})`; $('s6ib').style.transform=`scale(${1.22-kb*.12}) translateX(${kb*20}px)`;
-  [['pl1',70.6],['pl2',72.3],['pl3',73.9]].forEach(([id,t0])=>{const p=P(t,t0,t0+.55);const el=$(id);el.style.opacity=clamp(p*3);el.style.transform=`translateX(50%) scale(${p>0?lerp(.5,1,eb(p)):.5})`;});
-  // slogan band reveal
-  const bd=eio(P(t,75.6,76.4)); $('s6band').style.clipPath=`inset(${(1-bd)*50}% 0 ${(1-bd)*50}% 0)`; $('s6band').style.opacity=bd>0?1:0;
-  enter($('s6s1'),t,76.2,.7,60); const q=P(t,77,77.7); S('s6s2',{o:clamp(q*3),s:q>0?lerp(.6,1,eb(q)):.6});
-  S('s6star',{o:.16,r:(t-75)*8,s:lerp(.6,1.15,eo(P(t,75.6,78)))});
+  const a=eo(P(t,31.55,32.0)), b=eo(P(t,31.75,32.2));
+  S('s6a',{o:P(t,31.55,31.7),y:(1-a)*300}); S('s6la',{o:P(t,31.55,31.7),y:(1-a)*300});
+  S('s6b',{o:P(t,31.75,31.9),y:(1-b)*300}); S('s6lb',{o:P(t,31.75,31.9),y:(1-b)*300});
+  S('s6la1',{o:P(t,32.1,32.3)}); S('s6lb1',{o:P(t,32.2,32.4)});
+  const kb=P(t,31.5,38); $('s6ia').style.transform=`scale(${1.1+kb*.15})`; $('s6ib').style.transform=`scale(${1.25-kb*.15}) translateX(${kb*20}px)`;
+  [['pl1',32.4],['pl2',33.2],['pl3',34.0]].forEach(([id,t0])=>{const p=P(t,t0,t0+.3);const el=$(id);el.style.opacity=clamp(p*4);el.style.transform=`translateX(50%) scale(${p>0?lerp(.4,1,eb(p)):.4})`;});
+  const bd=eio(P(t,35.2,35.5)); $('s6band').style.clipPath=`inset(${(1-bd)*50}% 0 ${(1-bd)*50}% 0)`; $('s6band').style.opacity=bd>0?1:0;
+  slam($('s6s1'),t,35.4,.2,1.8); const q=P(t,35.9,36.15); S('s6s2',{o:q>0?1:0,s:lerp(2.2,1,eo(q))});
+  S('s6star',{o:.16,r:(t-35)*14,s:lerp(.6,1.15,eo(P(t,35.2,37)))});
  },
- s7(t){ enter($('s7in'),t,80.3,.8,40); }
+ s7(t){ enter($('s7in'),t,38.1,.4,40); }
 };
 
-const BOUNDS=SEG.slice(1).map(s=>s[0]);
 let lastScene=null;
 function renderAt(t){
-  // scenes
   let cur=SEG.findIndex(s=>t>=s[0]&&t<s[1]); if(cur<0)cur=SEG.length-1;
   SEG.forEach((s,i)=>{const el=$(s[2]);el.style.opacity=i===cur?1:0;el.style.visibility=i===cur?'visible':'hidden';});
   U[SEG[cur][2]](t);
-  // pattern drift
-  document.querySelectorAll('#'+SEG[cur][2]+' > .pattern').forEach(p=>p.style.transform=`translate(${(t*6)%180}px,${(t*4)%180}px)`);
+  // punch-in on every cut
+  const sc=$(SEG[cur][2]); const pi=1-eo(P(t,SEG[cur][0],SEG[cur][0]+.3)); sc.style.transform=cur?`scale(${1+.08*pi})`:'';
+  document.querySelectorAll('#'+SEG[cur][2]+' > .pattern').forEach(p=>p.style.transform=`translate(${(t*14)%180}px,${(t*9)%180}px)`);
+  // flash + shake
+  let fl=0, sx=0, sy=0;
+  for(const [h,f,a] of HITS){ const d=t-h; if(d>=0&&d<.3){ fl=Math.max(fl,f*(1-d/.14)); const k=a*(1-d/.3); sx+=k*Math.sin(d*95); sy+=k*Math.cos(d*77);} }
+  $('flash').style.opacity=clamp(fl); $('stage').style.transform=`translate(${sx}px,${sy}px)`;
   // header
-  const dark=['s0','s4','s5','s6','s7'].includes(SEG[cur][2]) && SEG[cur][2]!=='s6';
+  const dark=['s0','s4','s5','s7'].includes(SEG[cur][2]);
   const hc=dark?'#F6EEDF':'#14163A'; $('brand').style.color=hc; $('counter').style.color=hc;
-  $('counter').textContent=cur<7?String(cur+1).padStart(2,'0')+' / 07':'';
-  $('progbar').style.width=(clamp(t/80)*100)+'%';
-  $('header').style.opacity=cur===7?1-P(t,80,80.4):P(t,0,.6);
+  $('counter').textContent='';
+  $('progbar').style.width=(clamp(t/38)*100)+'%';
+  $('header').style.opacity=cur===7?1-P(t,38,38.2):1;
   // captions
   const c=CAPS.find(c=>t>=c.a&&t<c.b); const card=$('capcard');
   if(c){
     if(card.dataset.text!==c.text){card.dataset.text=c.text;card.innerHTML=c.text.split(' ').map(w=>`<span>${w}</span>`).join(' ');}
-    const spans=card.children; const n=spans.length; const stg=Math.min(.11,(c.b-c.a)*.45/n);
-    for(let i=0;i<n;i++){const p=eo(P(t,c.a+i*stg,c.a+i*stg+.3));spans[i].style.opacity=p;spans[i].style.transform=`translateY(${(1-p)*18}px)`;}
-    const fo=P(t,c.b-.18,c.b); card.style.opacity=1-fo; card.style.visibility='visible';
-    $('caption').style.transform=`translateY(${(1-eo(P(t,c.a,c.a+.3)))*20}px)`;
+    const spans=card.children; const n=spans.length; const stg=Math.min(.06,(c.b-c.a)*.3/n);
+    for(let i=0;i<n;i++){const p=eo(P(t,c.a+i*stg,c.a+i*stg+.18));spans[i].style.opacity=p;spans[i].style.transform=`translateY(${(1-p)*14}px)`;}
+    card.style.opacity=1-P(t,c.b-.08,c.b); card.style.visibility='visible';
+    $('caption').style.transform=`scale(${lerp(.9,1,eb(P(t,c.a,c.a+.2)))})`;
   } else {card.style.visibility='hidden';}
   // source chip
-  const src=SEG[cur][4]; const chip=$('srcchip');
+  const src=SEG[cur][3]; const chip=$('srcchip');
   if(src){
     if(chip.dataset.s!==src){chip.dataset.s=src; chip.innerHTML = src==='ONMT'
       ? `<span>المصدر:</span><img src="assets/img/L01_ONMT.png" style="height:40px"><span class="ltr">ONMT · 19/03/2026</span>`
       : `<span>${src}</span>`;}
     chip.style.background = (dark? 'rgba(246,238,223,.95)':'rgba(20,22,58,.92)'); chip.style.color = dark?'#14163A':'#F6EEDF';
-    chip.style.opacity=P(t,SEG[cur][0]+.8,SEG[cur][0]+1.3);
+    chip.style.opacity=P(t,SEG[cur][0]+.3,SEG[cur][0]+.5);
   } else chip.style.opacity=0;
-  // wipe transitions (RTL sweep)
-  let wx=2000; const W=.38;
-  for(const B of BOUNDS){ if(t>=B-W&&t<B+W){ const p=(t-B+W)/(2*W); // 0..1
-      wx = p<.5 ? lerp(1300,0,eio(p*2)) : lerp(0,-1500,eio((p-.5)*2));
-      $('wipe').style.background = ['#C4552D','#14163A','#1E6B4E','#C4552D','#3D4FD1','#E8A93A','#14163A'][BOUNDS.indexOf(B)%7];
-      $('wipestar').style.transform=`rotate(${p*180}deg) scale(${.6+Math.sin(p*Math.PI)*.5})`;
-  }}
-  $('wipe').style.transform=`translateX(${wx}px) skewX(-8deg)`;
+  $('wipe').style.transform='translateX(3000px)';
 }
 window.renderAt=renderAt;
 window.ready=Promise.all([document.fonts.ready,...[...document.images].map(i=>i.decode().catch(()=>{}))]).then(()=>{renderAt(0);return true});
