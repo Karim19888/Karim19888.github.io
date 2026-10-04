@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Ecole privée Maroc</title>
+<link rel="stylesheet" href="fonts/local.css">
+<style>
+:root{
+  --ink:#0B1626; --ink2:#12233A; --paper:#F6EFE2; --sand:#E9D9BC;
+  --saffron:#F4B23E; --terra:#D2553A; --majorelle:#3A4FD9; --mint:#2BB39A;
+  --red:#C1272D; --green:#0F7A3B; --white:#FFFFFF;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--ink)}
+body{font-family:'Cairo',sans-serif;color:#fff;position:relative}
+.abs{position:absolute}
+#stage{position:absolute;inset:0;overflow:hidden;background:radial-gradient(120% 80% at 70% 10%,#1B3356 0%,var(--ink) 60%)}
+#pattern{position:absolute;inset:-200px;opacity:.07}
+#grain{position:absolute;inset:0;opacity:.10;mix-blend-mode:overlay;pointer-events:none}
+.scene{position:absolute;inset:0;opacity:0}
+.full{position:absolute;inset:0;overflow:hidden}
+.full img,.card img{position:absolute;left:50%;top:50%;transform-origin:50% 50%;will-change:transform}
+.shade{position:absolute;inset:0}
+.card{position:absolute;overflow:hidden;border-radius:38px;box-shadow:0 40px 80px rgba(0,0,0,.45),0 0 0 6px rgba(255,255,255,.08)}
+.tag{position:absolute;display:flex;align-items:center;gap:14px;padding:12px 26px;border-radius:999px;background:rgba(11,22,38,.82);font-weight:700;font-size:34px;backdrop-filter:blur(6px);white-space:nowrap}
+.tag .dot{width:16px;height:16px;border-radius:50%;background:var(--saffron)}
+.credit{position:absolute;direction:ltr;font-family:'Inter',sans-serif;font-weight:500;font-size:21px;color:rgba(255,255,255,.72);letter-spacing:.2px;white-space:nowrap}
+.title{position:absolute;left:60px;right:60px;text-align:center;font-family:'Cairo';font-weight:900;line-height:1.2;text-shadow:0 6px 30px rgba(0,0,0,.45)}
+.kufi{font-family:'Reem Kufi','Cairo';font-weight:700}
+.hl{position:relative;display:inline-block;z-index:0}
+.hl::after{content:"";position:absolute;left:-14px;right:-14px;bottom:.08em;height:.36em;background:var(--saffron);z-index:-1;border-radius:10px;transform-origin:right center;transform:scaleX(var(--hx,1))}
+.chip{display:inline-flex;align-items:center;gap:14px;padding:14px 30px;border-radius:999px;font-weight:800;font-size:40px;background:#fff;color:var(--ink)}
+.src{position:absolute;left:70px;right:70px;text-align:center;font-size:24px;line-height:1.4;color:rgba(255,255,255,.7);font-weight:400}
+.src b{font-weight:700;color:rgba(255,255,255,.88)}
+.num{font-family:'Cairo';font-weight:900;direction:ltr;unicode-bidi:isolate}
+/* caption */
+#cap{position:absolute;left:70px;right:70px;top:1420px;height:190px;display:flex;align-items:center;justify-content:center}
+#capBox{background:rgba(8,15,27,.78);border-radius:28px;padding:16px 34px 20px;text-align:center;font-weight:700;font-size:44px;line-height:1.38;box-shadow:0 10px 40px rgba(0,0,0,.35);border-bottom:6px solid var(--saffron)}
+/* chrome */
+#prog{position:absolute;top:56px;left:60px;right:60px;height:10px;display:flex;gap:10px;direction:ltr}
+#prog div{flex:1;background:rgba(255,255,255,.18);border-radius:6px;overflow:hidden;position:relative}
+#prog div i{position:absolute;left:0;top:0;bottom:0;background:var(--saffron);width:0}
+#brand{position:absolute;top:96px;right:60px;display:flex;align-items:center;gap:16px;font-weight:800;font-size:30px;color:rgba(255,255,255,.92)}
+#brand svg{width:46px;height:46px}
+#brand span.sub{font-weight:400;color:rgba(255,255,255,.6);font-size:26px}
+#wipe{position:absolute;inset:0;pointer-events:none}
+#wipe div{position:absolute;top:-10%;height:120%;width:70%;transform:skewX(-12deg)}
+/* dot grid */
+.grid{position:absolute;display:grid;grid-template-columns:repeat(10,1fr);gap:18px;direction:ltr}
+.grid i{display:block;width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.13)}
+/* bars */
+.barwrap{position:absolute;bottom:0;width:230px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.bar{width:100%;border-radius:24px 24px 6px 6px}
+.paper{position:absolute;background:var(--paper);border-radius:34px;overflow:hidden;color:var(--ink);
+  background-image:linear-gradient(rgba(58,79,217,.13) 2px,transparent 2px),linear-gradient(90deg,rgba(58,79,217,.13) 2px,transparent 2px);background-size:54px 54px}
+.check{display:flex;align-items:center;gap:30px;font-size:66px;font-weight:900;color:var(--ink);margin:0 0 38px}
+.box{width:84px;height:84px;border:6px solid var(--ink);border-radius:18px;position:relative;flex:none}
+.doc{position:absolute;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.doc .im{position:absolute;background-repeat:no-repeat}
+.doc .mark{position:absolute;border:7px solid var(--terra);border-radius:12px;box-shadow:0 0 0 9999px rgba(11,22,38,.0)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="pattern" width="1480" height="2320"><defs>
+    <pattern id="zel" width="160" height="160" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#fff" stroke-width="3">
+        <polygon id="star8" points=""/>
+        <circle cx="80" cy="80" r="16"/>
+        <path d="M0 0L30 30M160 0L130 30M0 160L30 130M160 160L130 130"/>
+      </g>
+    </pattern></defs>
+    <rect width="100%" height="100%" fill="url(#zel)"/>
+  </svg>
+
+  <!-- ===== SCENE 1 : hook ===== -->
+  <div class="scene" id="s1">
+    <div class="full" id="s1a"><img src="P08.jpg" id="s1aimg" style="height:2000px"></div>
+    <div class="full" id="s1b" style="opacity:0"><img src="P09.jpg" id="s1bimg" style="height:2000px;filter:saturate(.8)"></div>
+    <div class="shade" style="background:linear-gradient(180deg,rgba(11,22,38,.85) 0%,rgba(11,22,38,.25) 35%,rgba(11,22,38,.35) 55%,rgba(11,22,38,.95) 85%)"></div>
+    <svg class="abs" id="s1star" style="left:240px;top:520px;width:600px;height:600px;opacity:.0" viewBox="0 0 200 200"><polygon class="star8big" fill="none" stroke="#F4B23E" stroke-width="2.5"/></svg>
+    <div class="title" id="s1t" style="top:640px;font-size:150px">
+      <div id="s1w1">القراية…</div>
+      <div id="s1w2"><span class="hl" id="s1hl">وراحة البال</span></div>
+    </div>
+    <div class="abs" id="s1icons" style="left:0;right:0;top:880px;display:flex;justify-content:center;align-items:center;gap:56px;direction:rtl;opacity:0">
+      <div style="text-align:center" id="s1i1">
+        <div style="width:250px;height:250px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px rgba(0,0,0,.4)">
+          <svg width="140" height="140" viewBox="0 0 64 64" fill="none" stroke="#0B1626" stroke-width="4" stroke-linejoin="round"><path d="M32 16C24 10 14 10 6 12v38c8-2 18-2 26 4 8-6 18-6 26-4V12c-8-2-18-2-26 4z"/><path d="M32 16v38"/></svg>
+        </div>
+        <div style="font-weight:800;font-size:44px;margin-top:22px">قراية ولادهم</div>
+      </div>
+      <div id="s1plus" style="font-size:110px;font-weight:900;color:var(--saffron);margin-top:-70px">+</div>
+      <div style="text-align:center" id="s1i2">
+        <div style="width:250px;height:250px;border-radius:50%;background:var(--saffron);display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px rgba(0,0,0,.4)">
+          <svg width="140" height="140" viewBox="0 0 64 64" fill="none" stroke="#0B1626" stroke-width="4" stroke-linejoin="round"><path d="M32 54S8 40 8 24a12 12 0 0 1 24-4 12 12 0 0 1 24 4c0 16-24 30-24 30z"/></svg>
+        </div>
+        <div style="font-weight:800;font-size:44px;margin-top:22px">راحة بالهم</div>
+      </div>
+    </div>
+    <div class="credit" id="s1c1" style="left:70px;top:1360px">Photo: Freepius · CC0 1.0 · Wikimedia Commons</div>
+    <div class="credit" id="s1c2" style="left:70px;top:1360px;opacity:0">Photo: Smorgasbord · CC BY-SA 3.0 · Wikimedia Commons</div>
+  </div>
+
+  <!-- ===== SCENE 2a : Italie photo ===== -->
+  <div class="scene" id="s2a">
+    <div class="card" id="s2acard" style="left:70px;top:330px;width:940px;height:900px"><img src="P06.jpg" id="s2aimg" style="height:1100px"></div>
+    <div class="tag" id="s2atag" style="right:110px;top:290px">
+      <span style="display:flex;width:60px;height:38px;border-radius:6px;overflow:hidden;direction:ltr"><i style="flex:1;background:#009246"></i><i style="flex:1;background:#fff"></i><i style="flex:1;background:#CE2B37"></i></span>
+      إيطاليا · بولزانو · 2022
+    </div>
+    <div class="title" id="s2at" style="top:1150px;font-size:76px">
+      <span class="chip" style="font-size:52px;background:var(--saffron)">دولة متقدمة… وأغنى منا بزاف</span>
+    </div>
+    <div class="credit" style="left:70px;top:1270px;opacity:0" id="s2acr">Photo: Bartleby08 · CC BY-SA 4.0 · Wikimedia Commons</div>
+  </div>
+
+  <!-- ===== SCENE 2b/c : dot grid ===== -->
+  <div class="scene" id="s2b">
+    <div class="abs" style="left:0;right:0;top:200px;text-align:center"><span class="chip" style="font-size:38px;padding:10px 28px">الابتدائي فقط</span></div>
+    <div class="abs" id="s2bhead" style="left:60px;right:60px;top:300px;display:flex;justify-content:space-between;align-items:center">
+      <div id="s2bcountry" style="font-size:66px;font-weight:900">إيطاليا <span style="font-size:40px;font-weight:400;opacity:.7" id="s2byear">2024</span></div>
+      <div class="num" id="s2bpct" style="font-size:120px;color:var(--mint)">6.1%</div>
+    </div>
+    <div class="grid" id="grid" style="left:78px;top:470px"></div>
+    <div class="abs" id="s2blabel" style="left:0;right:0;top:1300px;text-align:center;font-size:46px;font-weight:700">
+      تقريباً <span class="num" id="s2bn" style="color:var(--mint);font-size:64px">6</span> من كل <span class="num">100</span> تلميذ فالخصوصي
+    </div>
+  </div>
+
+  <!-- ===== SCENE 2d : bars ===== -->
+  <div class="scene" id="s2d">
+    <div class="abs" style="left:0;right:0;top:200px;text-align:center"><span class="chip" style="font-size:38px;padding:10px 28px">الابتدائي فقط</span></div>
+    <div class="title" style="top:290px;font-size:64px">التلاميذ فالخصوصي</div>
+    <div class="abs" id="bars" style="left:140px;width:800px;top:440px;height:780px">
+      <div class="abs" style="left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.4)"></div>
+      <div class="barwrap" style="right:60px;height:780px">
+        <div class="num" id="bMAv" style="font-size:96px;color:var(--saffron)">18.9%</div>
+        <div class="bar" id="bMA" style="background:linear-gradient(180deg,var(--saffron),var(--terra));height:0"></div>
+      </div>
+      <div class="barwrap" style="left:60px;height:780px">
+        <div class="num" id="bITv" style="font-size:96px;color:var(--mint)">6.1%</div>
+        <div class="bar" id="bIT" style="background:linear-gradient(180deg,#5EE0C8,var(--mint));height:0"></div>
+      </div>
+    </div>
+    <div class="abs" style="left:140px;width:800px;top:1235px;display:flex;justify-content:space-between;direction:ltr;font-size:46px;font-weight:800;text-align:center">
+      <div style="width:350px">إيطاليا<div style="font-size:30px;font-weight:400;opacity:.75">2024</div></div>
+      <div style="width:350px">المغرب<div style="font-size:30px;font-weight:400;opacity:.75">2024–2025</div></div>
+    </div>
+    <div class="abs" id="x3" style="left:430px;top:560px;width:300px;height:300px;border-radius:50%;background:var(--white);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+      <div style="font-size:40px;font-weight:700;margin-bottom:-14px">تقريباً</div>
+      <div class="num" style="font-size:130px;line-height:1.1">×3</div>
+    </div>
+    <div class="src" style="top:1360px">مقارنة فحصة التلاميذ، ماشي فالثمن أو طريقة التمويل · <b>MEN 2024–2025 · Eurostat 2024</b></div>
+  </div>
+
+  <!-- ===== SCENE 3a : archive Fès ===== -->
+  <div class="scene" id="s3a">
+    <div class="title" style="top:190px;font-size:64px">المغرب — <span class="hl">الابتدائي</span></div>
+    <div class="card" id="s3acard" style="left:200px;top:330px;width:680px;height:906px;border-radius:14px;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 22px #F6EFE2"><img src="P02.jpg" id="s3aimg" style="height:1000px;filter:sepia(.35) contrast(1.05)"></div>
+    <div class="abs" id="s3astamp" style="left:120px;top:1060px;padding:16px 30px;border:6px solid var(--terra);color:var(--terra);background:rgba(246,239,226,.95);border-radius:14px;font-weight:900;font-size:44px;transform:rotate(-8deg)">صورة أرشيفية · فاس 2006</div>
+    <div class="credit" style="left:200px;top:1275px">Photo: alex lines · CC BY-SA 2.0 · Wikimedia Commons</div>
+  </div>
+
+  <!-- ===== SCENE 3b : evolution ===== -->
+  <div class="scene" id="s3b">
+    <div class="title" style="top:190px;font-size:64px">المغرب — <span class="hl">الابتدائي</span></div>
+    <div class="title" style="top:290px;font-size:40px;font-weight:400;opacity:.8">حصة التلاميذ فالخصوصي</div>
+    <svg class="abs" id="evo" style="left:60px;top:390px" width="960" height="900" viewBox="0 0 960 900">
+      <line x1="60" y1="760" x2="900" y2="760" stroke="rgba(255,255,255,.4)" stroke-width="4"/>
+      <g id="evoBars"></g>
+      <path id="evoLine" fill="none" stroke="#F4B23E" stroke-width="6" stroke-dasharray="14 14" stroke-linecap="round"/>
+      <g id="evoPts"></g>
+    </svg>
+    <div class="src" style="top:1310px">نقط مرجعية مدوّرة، ماشي سلسلة سنوية كاملة · <b>UNESCO-ISU/OCDE · MEN 2024–2025</b></div>
+  </div>
+
+  <!-- ===== SCENE 3c : preuve MEN ===== -->
+  <div class="scene" id="s3c">
+    <div class="title" style="top:190px;font-size:60px">من الأرقام الرسمية <span style="opacity:.7;font-weight:400;font-size:44px">· 2024–2025</span></div>
+    <div class="doc" id="doc2" style="left:60px;top:330px;width:960px;height:96px">
+      <div class="im" style="background-image:url(MEN_2024_2025-2.png);background-size:1529px auto;background-position:-66px -495px;width:100%;height:100%"></div>
+      <div class="mark" id="mk2" style="left:316px;top:50px;width:182px;height:46px"></div>
+    </div>
+    <div class="abs" style="right:60px;top:455px;font-size:34px;font-weight:800;color:var(--saffron)">↑ الخصوصي · الابتدائي</div>
+    <div class="doc" id="doc1" style="left:60px;top:560px;width:960px;height:96px">
+      <div class="im" style="background-image:url(MEN_2024_2025-1.png);background-size:1529px auto;background-position:-66px -530px;width:100%;height:100%"></div>
+      <div class="mark" id="mk1" style="left:316px;top:49px;width:182px;height:46px"></div>
+    </div>
+    <div class="abs" style="right:60px;top:685px;font-size:34px;font-weight:800;color:#8FA0FF">↑ العمومي · الابتدائي</div>
+    <div class="abs" id="split" style="left:60px;right:60px;top:880px">
+      <div style="display:flex;height:120px;border-radius:24px;overflow:hidden;direction:rtl">
+        <div id="spPub" style="background:var(--majorelle);display:flex;align-items:center;padding:0 34px;font-weight:900;font-size:48px;width:81.1%">العمومي <span class="num" style="margin-right:auto">81%</span></div>
+        <div id="spPriv" style="background:var(--saffron);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:44px;width:18.9%"><span class="num">19%</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:22px;font-size:36px;font-weight:700">
+        <div><span class="num">3 643 510</span> فالعمومي</div>
+        <div style="color:var(--saffron)"><span class="num">851 583</span> فالخصوصي</div>
+      </div>
+      <div style="text-align:center;margin-top:44px;font-size:42px;font-weight:800">العمومي باقي هو <span class="hl">الأغلبية</span></div>
+    </div>
+    <div class="src" style="top:1330px">المصدر: <b>وزارة التربية الوطنية، إحصائيات 2024–2025</b> · الحساب: 851 583 ÷ 4 495 093</div>
+  </div>
+
+  <!-- ===== SCENE 4a : confiance ===== -->
+  <div class="scene" id="s4a">
+    <div class="card" id="s4acard" style="left:70px;top:200px;width:940px;height:700px"><img src="P09.jpg" id="s4aimg" style="height:900px"></div>
+    <div class="credit" style="left:70px;top:915px">Photo: Smorgasbord · CC BY-SA 3.0 · Wikimedia Commons</div>
+    <div class="abs" id="s4achip" style="left:0;right:0;top:990px;text-align:center"><span class="chip" style="background:var(--white)">بعض العائلات</span></div>
+    <div class="title" id="s4at" style="top:1100px;font-size:96px"><span class="hl" id="s4hl">الثقة</span>: واحد من الأسباب</div>
+  </div>
+
+  <!-- ===== SCENE 4b : checklist ===== -->
+  <div class="scene" id="s4b">
+    <div class="paper" id="s4paper" style="left:70px;top:200px;width:940px;height:1130px;padding:90px 90px">
+      <div style="font-size:48px;font-weight:800;color:var(--majorelle);margin-bottom:60px">الأب والأم باغيين:</div>
+      <div class="check" id="ck1"><div class="box"><svg class="tick" viewBox="0 0 84 84" style="position:absolute;inset:-14px;width:112px;height:112px"><path d="M14 46 L36 68 L78 14" fill="none" stroke="#D2553A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="120" stroke-dashoffset="120"/></svg></div>التتبّع</div>
+      <div class="check" id="ck2"><div class="box"><svg class="tick" viewBox="0 0 84 84" style="position:absolute;inset:-14px;width:112px;height:112px"><path d="M14 46 L36 68 L78 14" fill="none" stroke="#D2553A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="120" stroke-dashoffset="120"/></svg></div>اللغات</div>
+      <div class="check" id="ck3"><div class="box"><svg class="tick" viewBox="0 0 84 84" style="position:absolute;inset:-14px;width:112px;height:112px"><path d="M14 46 L36 68 L78 14" fill="none" stroke="#D2553A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="120" stroke-dashoffset="120"/></svg></div>ما يضيعش الوقت</div>
+      <div id="s4note" style="position:absolute;left:90px;right:90px;bottom:80px;font-size:32px;line-height:1.5;color:rgba(11,22,38,.7);border-top:3px dashed rgba(11,22,38,.25);padding-top:26px">
+        أسباب أخرى كتدخل حتى هي: الدخل، القرب، النقل، التوقيت… ماشي سبب واحد.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCENE 5 : budget ===== -->
+  <div class="scene" id="s5">
+    <div class="full"><img src="P08.jpg" id="s5img" style="height:2000px;filter:blur(3px) saturate(.9)"></div>
+    <div class="shade" style="background:rgba(11,22,38,.78)"></div>
+    <div class="title" style="top:260px;font-size:92px">ميزانية الدار…</div>
+    <div class="title" id="s5t2" style="top:380px;font-size:92px;color:var(--saffron)">ومصاريف القراية</div>
+    <div class="abs" style="left:70px;right:70px;top:640px">
+      <div style="display:flex;height:170px;border-radius:30px;overflow:hidden;direction:rtl;box-shadow:0 20px 50px rgba(0,0,0,.4)" id="budget">
+        <div id="bg1" style="background:#5B6B86;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800">الماكلة</div>
+        <div id="bg2" style="background:#44536E;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800">الدار</div>
+        <div id="bg3" style="background:#33415A;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800">النقل</div>
+        <div id="bg4" style="background:linear-gradient(90deg,var(--terra),var(--saffron));color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900">القراية</div>
+      </div>
+      <div style="text-align:center;margin-top:34px;font-size:30px;opacity:.65">رسم توضيحي — بلا أرقام</div>
+    </div>
+    <div class="abs" id="s5q" style="left:90px;right:90px;top:1020px;text-align:center;font-size:54px;font-weight:800;line-height:1.45">
+      «مستقبل ولدو<br>ما باغيش يغامر بيه»
+    </div>
+    <div class="credit" style="left:70px;top:1360px">Photo: Freepius · CC0 1.0 · Wikimedia Commons</div>
+  </div>
+
+  <!-- ===== SCENE 6 : même droit ===== -->
+  <div class="scene" id="s6">
+    <div class="full" id="s6a"><img src="P04.jpg" id="s6aimg" style="height:2000px"></div>
+    <div class="full" id="s6b" style="opacity:0"><img src="P03.jpg" id="s6bimg" style="height:2000px"></div>
+    <div class="shade" style="background:linear-gradient(180deg,rgba(11,22,38,.9) 0%,rgba(11,22,38,.2) 30%,rgba(11,22,38,.25) 50%,rgba(11,22,38,.95) 80%)"></div>
+    <div class="tag" id="s6tag1" style="right:60px;top:180px"><span class="dot"></span>آيت حرز الله · 2023</div>
+    <div class="tag" id="s6tag2" style="right:60px;top:180px;opacity:0"><span class="dot"></span>آيت ملول · 2020</div>
+    <div class="title" id="s6t" style="top:1000px;font-size:104px">نفس <span class="hl" id="s6hl">الحق</span><br><span style="font-size:76px">فتعليم مزيان</span></div>
+    <div class="credit" id="s6c1" style="left:70px;top:1360px">Photo: RACHID BAYA · CC0 1.0 · Wikimedia Commons</div>
+    <div class="credit" id="s6c2" style="left:70px;top:1360px;opacity:0">Photo: Abdeaitali · CC BY-SA 4.0 · Wikimedia Commons</div>
+  </div>
+
+  <!-- ===== SCENE 7a : Salé ===== -->
+  <div class="scene" id="s7a">
+    <div class="card" id="s7acard" style="left:70px;top:260px;width:940px;height:1000px"><img src="P05.jpg" id="s7aimg" style="height:1200px"></div>
+    <div class="tag" style="right:110px;top:220px"><span class="dot"></span>سلا · 2023</div>
+    <div class="credit" style="left:70px;top:1275px">Photo: Anass Sedrati · CC BY-SA 4.0 · Wikimedia Commons</div>
+  </div>
+
+  <!-- ===== SCENE 7b : final ===== -->
+  <div class="scene" id="s7b">
+    <svg class="abs" id="s7star" style="left:90px;top:330px;width:900px;height:900px" viewBox="0 0 200 200">
+      <polygon class="star8big" fill="rgba(244,178,62,.10)" stroke="#F4B23E" stroke-width="1.6"/>
+      <polygon class="star8mid" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/>
+    </svg>
+    <div class="title kufi" id="s7t1" style="top:580px;font-size:100px;line-height:1.25">مدرسة عمومية</div>
+    <div class="title kufi" id="s7t2" style="top:720px;font-size:100px;line-height:1.25"><span class="hl" id="s7hl">نثقو فيها</span></div>
+    <div class="abs" id="s7sub" style="left:0;right:0;top:1250px;text-align:center;font-size:34px;opacity:.75">ماشي الاختيار اللي كيبقى ملي ما كيبقاوش الفلوس</div>
+  </div>
+
+  <div id="wipe"><div id="w1" style="background:var(--saffron)"></div><div id="w2" style="background:var(--majorelle)"></div></div>
+
+  <svg id="grain" width="1080" height="1920"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 1 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+
+  <div id="prog"><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div>
+  <div id="brand">
+    <svg viewBox="0 0 200 200"><polygon class="star8big" fill="#F4B23E"/></svg>
+    <div>المدرسة فالمغرب <span class="sub">· الابتدائي</span></div>
+  </div>
+  <div id="cap"><div id="capBox"></div></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eback=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const lerp=(a,b,x)=>a+(b-a)*x;
+// 8-point star polygon
+function star(cx,cy,R,r,n=8,rot=0){const p=[];for(let i=0;i<n*2;i++){const a=rot+Math.PI*i/n;const rr=i%2?r:R;p.push((cx+rr*Math.sin(a)).toFixed(2)+','+(cy-rr*Math.cos(a)).toFixed(2))}return p.join(' ')}
+document.getElementById('star8').setAttribute('points',star(80,80,62,40));
+document.querySelectorAll('.star8big').forEach(e=>e.setAttribute('points',star(100,100,96,62)));
+document.querySelectorAll('.star8mid').forEach(e=>e.setAttribute('points',star(100,100,70,46,8,Math.PI/8)));
+
+// grid
+const grid=$('grid');for(let i=0;i<100;i++)grid.appendChild(document.createElement('i'));
+const dots=[...grid.children];
+
+// evolution chart
+const evo=[{y:'2000',v:5,lab:'≈5%'},{y:'2013',v:14,lab:'14%'},{y:'2024–2025',v:18.9,lab:'18.9%'}];
+const evoX=[190,480,770],base=760,scale=30;
+let gB='',gP='';
+evo.forEach((d,i)=>{gB+=`<rect id="eb${i}" x="${evoX[i]-80}" width="160" y="${base}" height="0" rx="18" fill="${i==2?'url(#gS)':'rgba(255,255,255,.22)'}"/>`+
+ `<text x="${evoX[i]}" y="${base+70}" text-anchor="middle" fill="#fff" font-family="Cairo" font-weight="800" font-size="44">${d.y}</text>`;
+ gP+=`<g id="ep${i}" opacity="0"><circle cx="${evoX[i]}" cy="${base-d.v*scale}" r="18" fill="#F4B23E" stroke="#0B1626" stroke-width="6"/>`+
+ `<text x="${evoX[i]}" y="${base-d.v*scale-44}" text-anchor="middle" fill="${i==2?'#F4B23E':'#fff'}" font-family="Cairo" font-weight="900" font-size="${i==2?78:62}" direction="ltr">${d.lab}</text></g>`});
+$('evo').insertAdjacentHTML('afterbegin','<defs><linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4B23E"/><stop offset="1" stop-color="#D2553A"/></linearGradient></defs>');
+$('evoBars').innerHTML=gB;$('evoPts').innerHTML=gP;
+const evoPath=`M${evoX[0]} ${base-5*scale} L${evoX[1]} ${base-14*scale} L${evoX[2]} ${base-18.9*scale}`;
+$('evoLine').setAttribute('d',evoPath);
+const evoLen=(()=>{let L=0;for(let i=1;i<3;i++){L+=Math.hypot(evoX[i]-evoX[i-1],(evo[i].v-evo[i-1].v)*scale)}return L})();
+
+// captions (SOUS_TITRES_DARIJA.srt)
+const caps=[
+[0,3.5,'فالمغرب، كاين آباء كيخلّصو<br>جوج حوايج ففاتورة وحدة:'],
+[3.5,7,'قراية ولادهم… وراحة بالهم.'],
+[7,10.5,'وشوف هاد المفارقة: إيطاليا،<br>دولة متقدمة وأغنى منا بزاف،'],
+[10.5,14,'غير ستة من كل مية تلميذ فالابتدائي'],
+[14,17,'كيقراو فالخصوصي.<br>وفالمغرب، تسعتاش.'],
+[17,21,'تقريباً ثلاث مرات أكثر.'],
+[21,24.5,'وهادشي تبدّل مع الوقت: سنة ألفين،'],
+[24.5,28,'الخصوصي كان فيه غير خمسة فالمية<br>من تلاميذ الابتدائي.'],
+[28,32,'فموسم 2024–2025، وصل لتسعتاش.'],
+[32,35.5,'ومن الأسباب اللي كتدفع بعض العائلات ليه:'],
+[35.5,38.5,'الثقة اللي نقصات فالعمومي.<br>الأب والأم باغيين التتبّع، اللغات،'],
+[38.5,42,'وولدهم ما يضيعش عليه الوقت.'],
+[42,45,'وكاين اللي كيضيّق على مصاريف الدار<br>باش يخلّص المدرسة…'],
+[45,48,'حيث مستقبل ولدو ما باغيش يغامر بيه.'],
+[48,52,'ولكن اللي ما عندوش باش يخلّص،<br>حتى ولدو عندو نفس الحق.'],
+[52,55.5,'المدرسة العمومية خاصها تكون<br>اختيار كنثقو فيه…'],
+[55.5,59,'ماشي الاختيار اللي كيبقى لينا<br>ملي ما كيبقاوش الفلوس.']];
+const ISO=str=>str.replace(/\d[\d\u00a0 –÷.,]*\d/g,m=>'\u2066'+m+'\u2069');
+caps.forEach(c=>c[2]=ISO(c[2]));
+(function walk(n){if(n.nodeType===3){if(/\d/.test(n.nodeValue))n.nodeValue=ISO(n.nodeValue)}else if(n.tagName!=='SCRIPT'&&n.tagName!=='STYLE')n.childNodes.forEach(walk)})(document.body);
+const SHOW_CAPS=!location.hash.includes('nocap');
+
+const scenes={s1:[0,7],s2a:[7,10.5],s2b:[10.5,17],s2d:[17,21],s3a:[21,24.5],s3b:[24.5,28],s3c:[28,32],s4a:[32,37],s4b:[37,42],s5:[42,48],s6:[48,52],s7a:[52,55.5],s7b:[55.5,59.2]};
+const cuts=[7,10.5,17,21,24.5,28,32,37,42,48,52,55.5];
+const seqs=[[0,7],[7,21],[21,32],[32,42],[42,48],[48,52],[52,59]];
+
+function kb(img,boxW,boxH,lt,dur,z0,z1,dx0,dx1,dy0=0,dy1=0){
+  const p=eio(clamp(lt/dur));const s=lerp(z0,z1,p);
+  img.style.transform=`translate(-50%,-50%) translate(${lerp(dx0,dx1,p)}px,${lerp(dy0,dy1,p)}px) scale(${s})`;
+}
+function vis(id,t,fadeIn=.35,fadeOut=.35){
+  const [a,b]=scenes[id];const el=$(id);
+  let o=0;if(t>=a-fadeIn&&t<=b+fadeOut){o=Math.min(seg(t,a-fadeIn*0,a+fadeIn),1-seg(t,b,b+fadeOut));}
+  if(a===0)o=t<=b+fadeOut?(1-seg(t,b,b+fadeOut)):0;
+  if(id==='s7b')o=seg(t,a,a+fadeIn);
+  el.style.opacity=o;el.style.display=o>0.001?'block':'none';return t-a;
+}
+function pop(el,t,a,d=.45,from=40){const p=seg(t,a,a+d);el.style.opacity=clamp(p*1.6);el.style.transform=`translateY(${(1-eback(p))*from}px) scale(${lerp(.92,1,eo(p))})`}
+function hl(el,t,a,d=.5){el.style.setProperty('--hx',eo(seg(t,a,a+d)))}
+
+function render(t){
+  // background pattern drift
+  $('pattern').style.transform=`translate(${-t*6}px,${-t*10}px) rotate(${t*0.15}deg)`;
+  // progress
+  document.querySelectorAll('#prog i').forEach((el,i)=>{el.style.width=(seg(t,seqs[i][0],seqs[i][1])*100)+'%'});
+  // wipe at cuts
+  let w=null;for(const c of cuts){if(t>=c-.28&&t<=c+.28){w=(t-(c-.28))/.56}}
+  if(w===null){$('wipe').style.display='none'}else{$('wipe').style.display='block';
+    $('w1').style.left=lerp(-90,130,eio(w))+'%';$('w2').style.left=lerp(-120,110,eio(clamp(w*1.15-.1)))+'%';}
+
+  // ---- S1
+  let lt=vis('s1',t);
+  if(lt>-1&&lt<8){
+    kb($('s1aimg'),1080,1920,lt,4.2,1.0,1.12,40,-40);
+    const swap=seg(t,3.3,3.8);$('s1b').style.opacity=swap;
+    kb($('s1bimg'),1080,1920,lt-3.3,4,1.05,1.15,-30,30);
+    $('s1c1').style.opacity=1-swap;$('s1c2').style.opacity=swap;
+    pop($('s1w1'),t,.25,.5,60);pop($('s1w2'),t,.9,.5,60);hl($('s1hl'),t,1.3,.6);
+    // title moves up at 3.5
+    const up=eio(seg(t,3.4,4.0));
+    $('s1t').style.top=lerp(640,300,up)+'px';$('s1t').style.fontSize=lerp(150,110,up)+'px';
+    $('s1star').style.opacity=.55*(seg(t,.2,1))*(1-up);$('s1star').style.transform=`rotate(${t*12}deg) scale(${lerp(.8,1.05,seg(t,0,3.4))})`;
+    $('s1icons').style.opacity=1;
+    pop($('s1i1'),t,4.0,.5,80);pop($('s1plus'),t,4.4,.4,40);pop($('s1i2'),t,4.7,.5,80);
+    if(t<4){$('s1icons').style.opacity=0}
+  }
+  // ---- S2a Italy
+  lt=vis('s2a',t);
+  if(lt>-1&&lt<5){
+    kb($('s2aimg'),940,900,lt,3.8,1.02,1.14,30,-30);
+    const p=eo(seg(t,6.9,7.6));$('s2acard').style.transform=`translateY(${(1-p)*120}px) rotate(${(1-p)*-3}deg)`;
+    pop($('s2atag'),t,7.4,.4,30);pop($('s2at'),t,8.3,.5,50);$('s2acr').style.opacity=seg(t,7.6,8);
+  }
+  // ---- S2b dots
+  lt=vis('s2b',t);
+  if(lt>-1&&lt<8){
+    const toMA=eio(seg(t,14,14.6));
+    const itN=Math.round(6*eo(seg(t,10.9,12)));
+    const maN=Math.round(lerp(6,19,eo(seg(t,14.2,15.6))));
+    const n=t<14.2?itN:maN;
+    const col=t<14.2?'#2BB39A':'#F4B23E';
+    dots.forEach((d,i)=>{const on=i<n;d.style.background=on?col:'rgba(255,255,255,.13)';
+      const ap=seg(t,10.5+ (i%10)*0.02+Math.floor(i/10)*0.03,10.9+(i%10)*0.02+Math.floor(i/10)*0.03);
+      d.style.transform=`scale(${eback(ap)*(on?1.08:1)})`;d.style.boxShadow=on?`0 0 24px ${col}88`:'none'});
+    const pct=t<14.2?6.1*eo(seg(t,10.9,12)):lerp(6.1,18.9,eo(seg(t,14.2,15.6)));
+    $('s2bpct').textContent=pct.toFixed(1)+'%';$('s2bpct').style.color=col;
+    $('s2bn').textContent=n;$('s2bn').style.color=col;
+    $('s2bcountry').firstChild.textContent=t<14.2?'إيطاليا ':'المغرب ';
+    $('s2byear').textContent=t<14.2?'2024':'\u20662024–2025\u2069';
+    const flip=Math.abs(t-14.2)<.25?1-Math.abs(t-14.2)/.25:0;
+    $('s2bhead').style.transform=`scaleY(${1-flip*.9})`;
+    pop($('s2blabel'),t,11.2,.5,30);
+  }
+  // ---- S2d bars
+  lt=vis('s2d',t);
+  if(lt>-1&&lt<5){
+    const H=760/20;
+    const pm=eo(seg(t,17.2,18.2)),pi=eo(seg(t,17.4,18.4));
+    $('bMA').style.height=(18.9*H*pm)+'px';$('bIT').style.height=(6.1*H*pi)+'px';
+    $('bMAv').textContent=(18.9*pm).toFixed(1)+'%';$('bITv').textContent=(6.1*pi).toFixed(1)+'%';
+    const xp=seg(t,18.7,19.2);$('x3').style.opacity=clamp(xp*2);$('x3').style.transform=`scale(${eback(xp)}) rotate(${(1-eo(xp))*-25}deg)`;
+  }
+  // ---- S3a archive
+  lt=vis('s3a',t);
+  if(lt>-1&&lt<5){
+    kb($('s3aimg'),680,906,lt,3.8,1.03,1.13,0,0,20,-20);
+    const p=eo(seg(t,20.9,21.6));$('s3acard').style.transform=`rotate(${lerp(6,2,p)}deg) translateY(${(1-p)*100}px)`;
+    const sp=seg(t,21.8,22.2);$('s3astamp').style.opacity=sp>0?1:0;$('s3astamp').style.transform=`rotate(-8deg) scale(${lerp(1.8,1,eo(sp))})`;
+  }
+  // ---- S3b evolution
+  lt=vis('s3b',t);
+  if(lt>-1&&lt<5){
+    evo.forEach((d,i)=>{const a=24.7+i*0.9;const p=eo(seg(t,a,a+.7));const h=d.v*scale*p;
+      const r=$('eb'+i);r.setAttribute('y',base-h);r.setAttribute('height',h);
+      const g=$('ep'+i);g.setAttribute('opacity',seg(t,a+.4,a+.7));});
+    const lp=seg(t,25.1,27.0);$('evoLine').style.strokeDasharray=`14 14`;
+    $('evoLine').style.clipPath=`inset(0 ${100-lp*100}% 0 0)`;
+  }
+  // ---- S3c proof
+  lt=vis('s3c',t);
+  if(lt>-1&&lt<5){
+    pop($('doc2'),t,28.1,.45,60);pop($('doc1'),t,28.5,.45,60);
+    const m2=seg(t,28.6,29),m1=seg(t,29,29.4);
+    $('mk2').style.opacity=m2;$('mk2').style.transform=`scale(${lerp(1.4,1,eo(m2))})`;
+    $('mk1').style.opacity=m1;$('mk1').style.transform=`scale(${lerp(1.4,1,eo(m1))})`;
+    pop($('split'),t,29.5,.5,50);
+    const sp=eo(seg(t,29.6,30.6));$('spPriv').style.width=(18.9*sp)+'%';$('spPub').style.width=(100-18.9*sp)+'%';
+    $('split').querySelectorAll('.hl').forEach(e=>hl(e,t,30.8,.5));
+  }
+  // ---- S4a
+  lt=vis('s4a',t);
+  if(lt>-1&&lt<6){
+    kb($('s4aimg'),940,700,lt,5,1.05,1.2,-40,40);
+    pop($('s4achip'),t,32.6,.4,30);pop($('s4at'),t,33.2,.5,50);hl($('s4hl'),t,35.6,.5);
+  }
+  // ---- S4b checklist
+  lt=vis('s4b',t);
+  if(lt>-1&&lt<6){
+    const pp=eo(seg(t,36.8,37.5));$('s4paper').style.transform=`translateY(${(1-pp)*200}px) rotate(${(1-pp)*4}deg)`;
+    [[ 'ck1',37.6],['ck2',38.2],['ck3',39.0]].forEach(([id,a])=>{const el=$(id);pop(el,t,a,.4,30);
+      el.querySelector('path').style.strokeDashoffset=120*(1-eo(seg(t,a+.3,a+.7)));});
+    pop($('s4note'),t,40.2,.5,20);
+  }
+  // ---- S5 budget
+  lt=vis('s5',t);
+  if(lt>-1&&lt<7){
+    kb($('s5img'),1080,1920,lt,6,1.1,1.2,-30,30);
+    const g=eio(seg(t,43,46));
+    const w4=lerp(16,46,g),rest=100-w4;
+    $('bg1').style.width=rest*.40+'%';$('bg2').style.width=rest*.38+'%';$('bg3').style.width=rest*.22+'%';$('bg4').style.width=w4+'%';
+    $('budget').style.transform=`scaleX(${eo(seg(t,42,42.6))})`;
+    pop($('s5t2'),t,42.7,.5,40);pop($('s5q'),t,45.1,.6,40);
+  }
+  // ---- S6
+  lt=vis('s6',t);
+  if(lt>-1&&lt<5){
+    kb($('s6aimg'),1080,1920,lt,2.6,1.0,1.1,0,-60);
+    const sw=seg(t,50,50.4);$('s6b').style.opacity=sw;kb($('s6bimg'),1080,1920,lt-2,2.4,1.02,1.1,60,-20);
+    $('s6tag1').style.opacity=1-sw;$('s6tag2').style.opacity=sw;$('s6c1').style.opacity=1-sw;$('s6c2').style.opacity=sw;
+    pop($('s6t'),t,48.3,.5,60);hl($('s6hl'),t,50.4,.5);
+  }
+  // ---- S7a
+  lt=vis('s7a',t);
+  if(lt>-1&&lt<5){
+    kb($('s7aimg'),940,1000,lt,3.8,1.02,1.12,40,-40);
+    const p=eo(seg(t,51.9,52.6));$('s7acard').style.transform=`translateY(${(1-p)*120}px)`;
+  }
+  // ---- S7b
+  lt=vis('s7b',t);
+  if(lt>-1){
+    $('s7star').style.transform=`rotate(${t*8}deg) scale(${lerp(.6,1,eo(seg(t,55.5,56.4)))})`;
+    pop($('s7t1'),t,55.7,.5,60);pop($('s7t2'),t,56.1,.5,60);hl($('s7hl'),t,56.7,.6);pop($('s7sub'),t,57.0,.6,20);if(SHOW_CAPS)$('s7sub').style.opacity=0;
+  }
+  // captions
+  const c=caps.find(c=>t>=c[0]&&t<c[1]);
+  const box=$('capBox');
+  if(SHOW_CAPS&&c&&t<59){box.innerHTML=c[2];const p=seg(t,c[0],c[0]+.18);box.style.opacity=1;box.style.transform=`translateY(${(1-eo(p))*16}px)`;$('cap').style.display='flex'}
+  else{$('cap').style.display='none'}
+}
+window.render=render;
+render(0);
+</script>
+</body>
+</html>
