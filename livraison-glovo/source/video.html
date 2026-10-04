@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ar"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Cairo;font-weight:400;src:url(fonts/cairo-arabic-400-normal.woff2);unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:Cairo;font-weight:700;src:url(fonts/cairo-arabic-700-normal.woff2);unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:Cairo;font-weight:900;src:url(fonts/cairo-arabic-900-normal.woff2);unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:Cairo;font-weight:400;src:url(fonts/cairo-latin-400-normal.woff2)}
+@font-face{font-family:Cairo;font-weight:700;src:url(fonts/cairo-latin-700-normal.woff2)}
+@font-face{font-family:Cairo;font-weight:900;src:url(fonts/cairo-latin-900-normal.woff2)}
+:root{--y:#FFC244;--g:#00A082;--ink:#0D1A17;--red:#FF5A4E;--paper:#FFF8E8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--ink);font-family:Cairo,sans-serif;color:#fff}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden}
+.abs{position:absolute}
+.scene{position:absolute;inset:0;opacity:0}
+.bg{position:absolute;inset:-4%;background-size:cover;background-position:center;will-change:transform}
+.shade{position:absolute;inset:0}
+.ar{direction:rtl;unicode-bidi:plaintext}
+.n{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.chip{position:absolute;left:40px;top:205px;padding:10px 20px;border-radius:999px;background:rgba(13,26,23,.72);border:1px solid rgba(255,255,255,.25);font-size:24px;font-weight:700;direction:rtl}
+.chip b{color:var(--y)}
+/* bandeau */
+#band{position:absolute;top:96px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:12px 30px;border-radius:999px;background:var(--ink);border:3px solid var(--y);color:var(--y);font-weight:900;font-size:30px;direction:rtl;z-index:40;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#band .dot{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--red);margin-left:12px;vertical-align:middle}
+#prog{position:absolute;top:0;right:0;height:10px;background:var(--y);z-index:50}
+#tag{position:absolute;top:200px;right:60px;font-weight:900;font-size:30px;color:var(--ink);background:var(--y);padding:6px 22px;border-radius:12px;z-index:40;direction:rtl}
+/* subtitles */
+#sub{position:absolute;left:60px;right:60px;bottom:150px;text-align:center;z-index:45;direction:rtl}
+#sub span{display:inline;background:rgba(13,26,23,.86);box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:6px 22px;line-height:1.75;font-size:50px;font-weight:700;border-radius:14px;direction:rtl}
+#swipe{position:absolute;top:-10%;height:120%;width:160%;left:0;background:var(--y);z-index:60;transform:skewX(-14deg) translateX(200%)}
+#swipe2{position:absolute;top:-10%;height:120%;width:160%;left:0;background:var(--g);z-index:59;transform:skewX(-14deg) translateX(200%)}
+#grain{position:absolute;inset:0;z-index:70;opacity:.07;pointer-events:none;mix-blend-mode:overlay}
+/* S1 */
+#notif{position:absolute;top:330px;left:90px;right:90px;background:rgba(255,255,255,.96);color:var(--ink);border-radius:36px;padding:28px 34px;display:flex;align-items:center;gap:26px;direction:rtl;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+#notif .ic{width:96px;height:96px;border-radius:26px;background:var(--y);display:flex;align-items:center;justify-content:center;flex:none}
+#notif .t1{font-size:38px;font-weight:900;line-height:1.2}
+#notif .t2{font-size:28px;font-weight:400;opacity:.7}
+#tap{position:absolute;width:150px;height:150px;border-radius:50%;border:8px solid var(--y);top:345px;left:470px}
+#title{position:absolute;left:60px;right:60px;top:880px;text-align:center;direction:rtl}
+#title .l1{font-size:118px;font-weight:900;line-height:1.1;text-shadow:0 8px 40px rgba(0,0,0,.6)}
+#title .l2{display:inline-block;margin-top:18px;font-size:128px;font-weight:900;line-height:1.15;color:var(--ink);background:var(--y);padding:0 40px 10px;border-radius:24px;transform-origin:center}
+/* receipt */
+#s2{background:var(--y)}
+#stripes{position:absolute;inset:-200px;background:repeating-linear-gradient(-45deg,rgba(13,26,23,.06) 0 40px,transparent 40px 80px)}
+#big115{position:absolute;top:300px;left:0;right:0;text-align:center;color:var(--ink);font-weight:900;font-size:230px;line-height:1}
+#big115 small{font-size:80px}
+#big115cap{position:absolute;top:560px;left:0;right:0;text-align:center;color:var(--ink);font-size:40px;font-weight:700;direction:rtl}
+#receipt{position:absolute;top:700px;left:150px;right:150px;background:var(--paper);color:var(--ink);padding:44px 54px 70px;border-radius:24px 24px 0 0;box-shadow:0 40px 80px rgba(0,0,0,.25);direction:rtl;
+ -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 26px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/52px 26px repeat-x}
+#receipt .hd{font-size:30px;font-weight:900;letter-spacing:1px;border-bottom:4px dashed rgba(13,26,23,.25);padding-bottom:18px;margin-bottom:16px;display:flex;justify-content:space-between}
+#receipt .hd em{font-style:normal;background:var(--red);color:#fff;border-radius:10px;padding:0 14px;font-size:26px}
+.row{display:flex;justify-content:space-between;align-items:center;font-size:52px;font-weight:700;padding:12px 0}
+.row .lb{display:flex;align-items:center;gap:20px}
+.row .sw{width:22px;height:22px;border-radius:6px}
+#rtot{border-top:4px solid var(--ink);margin-top:14px;padding-top:22px;font-weight:900;font-size:66px}
+/* bars */
+.panel{position:absolute;left:60px;right:60px;background:rgba(13,26,23,.88);border-radius:36px;padding:44px 50px;border:2px solid rgba(255,255,255,.12);direction:rtl;box-shadow:0 30px 70px rgba(0,0,0,.45)}
+.ph{font-size:64px;font-weight:900;display:flex;align-items:center;gap:22px}
+.ph .ico{width:86px;height:86px;border-radius:24px;background:var(--y);display:flex;align-items:center;justify-content:center}
+.bar{position:relative;height:96px;border-radius:20px;background:rgba(255,255,255,.08);overflow:hidden;margin:34px 0 16px;direction:ltr}
+.seg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:36px;color:var(--ink);overflow:hidden;white-space:nowrap}
+.lines{margin-top:14px}
+.ln{display:flex;justify-content:space-between;font-size:42px;font-weight:700;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.ln .v{font-weight:900}
+.minus{color:var(--red)}
+.res{margin-top:22px;display:flex;align-items:baseline;justify-content:space-between}
+.res .k{font-size:46px;font-weight:700}
+.res .big{font-size:150px;font-weight:900;color:var(--y);line-height:1}
+.res .big small{font-size:60px}
+.note{font-size:32px;opacity:.75;margin-top:4px}
+/* rider */
+#route{position:absolute;top:300px;left:0;width:1080px;height:420px}
+#coins{position:absolute;top:760px;left:60px;right:60px}
+/* platform */
+#phone{position:absolute;top:330px;left:290px;width:500px;height:820px;border-radius:70px;background:#111;border:14px solid #222;box-shadow:0 40px 90px rgba(0,0,0,.6);overflow:hidden;direction:rtl}
+#phone .scr{position:absolute;inset:0;background:linear-gradient(170deg,#163a33,#0D1A17)}
+#phone .notch{position:absolute;top:16px;left:50%;transform:translateX(-50%);width:150px;height:34px;border-radius:20px;background:#000}
+#ptitle{position:absolute;top:90px;left:0;right:0;text-align:center;font-size:40px;font-weight:900}
+#pcap{position:absolute;top:150px;left:0;right:0;text-align:center;font-size:26px;opacity:.7}
+#pnum{position:absolute;top:300px;left:0;right:0;text-align:center;font-size:210px;font-weight:900;color:var(--y);line-height:1}
+#pdh{position:absolute;top:520px;left:0;right:0;text-align:center;font-size:44px;font-weight:700}
+.fly{position:absolute;padding:14px 30px;border-radius:24px;font-size:44px;font-weight:900;color:var(--ink);background:var(--y);direction:rtl;white-space:nowrap;box-shadow:0 14px 30px rgba(0,0,0,.35)}
+#stamp{position:absolute;top:1200px;left:0;right:0;text-align:center}
+#stamp div{display:inline-block;border:10px solid var(--red);color:var(--red);font-size:86px;font-weight:900;padding:0 40px 10px;border-radius:22px;background:rgba(13,26,23,.85);direction:rtl}
+#stampnote{position:absolute;top:1410px;left:80px;right:80px;text-align:center;font-size:34px;opacity:.85;direction:rtl}
+/* recap */
+#recap{position:absolute;top:300px;left:60px;right:60px;direction:rtl}
+#recap .h{font-size:76px;font-weight:900;text-align:center}
+#recap .h span{color:var(--y)}
+#rbar{position:relative;height:620px;margin-top:40px;display:flex;flex-direction:column;gap:14px}
+.rb{position:relative;border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:0 44px;color:var(--ink);font-weight:900;overflow:hidden;transform-origin:right center}
+.rb .k{font-size:50px}.rb .v{font-size:84px}
+.rb .after{font-size:30px;font-weight:700;opacity:.8}
+#final{position:absolute;inset:0}
+#final .half{position:absolute;left:0;right:0;height:960px;overflow:hidden}
+#fmsg{position:absolute;top:760px;left:50px;right:50px;text-align:center;direction:rtl}
+#fmsg div{display:inline;background:var(--y);color:var(--ink);font-size:84px;font-weight:900;line-height:1.55;padding:4px 26px;box-decoration-break:clone;-webkit-box-decoration-break:clone;border-radius:16px}
+#endc{position:absolute;inset:0;background:var(--ink);direction:rtl;padding:470px 80px 0}
+#endc h3{font-size:72px;font-weight:900;color:var(--y);margin-bottom:24px}
+#endc p{font-size:40px;line-height:1.6;opacity:.9;margin-bottom:14px}
+#endc .ltr{direction:ltr;text-align:left;font-size:30px;opacity:.75}
+</style></head>
+<body><div id="stage">
+
+<!-- S1 hook -->
+<div class="scene" id="s1">
+  <div class="bg" id="s1a" style="background-image:url(img/P01_Casablanca_LeDesk.jpg)"></div>
+  <div class="bg" id="s1b" style="background-image:url(img/P04_cuisine_Marrakech_2011.jpg);opacity:0"></div>
+  <div class="shade" style="background:linear-gradient(180deg,rgba(13,26,23,.55),rgba(13,26,23,.15) 35%,rgba(13,26,23,.75) 75%,rgba(13,26,23,.95))"></div>
+  <div id="tap"></div>
+  <div id="notif"><div class="ic"><svg width="62" height="62" viewBox="0 0 64 64"><circle cx="16" cy="46" r="9" fill="none" stroke="#0D1A17" stroke-width="5"/><circle cx="50" cy="46" r="9" fill="none" stroke="#0D1A17" stroke-width="5"/><path d="M16 46h20l8-18h-10M44 28l6 18M8 30h18v-12H8z" fill="none" stroke="#0D1A17" stroke-width="5" stroke-linejoin="round"/></svg></div>
+    <div><div class="t1">الطلبية ديالك فالطريق</div><div class="t2">كتضغط… والماكلة كتجي</div></div></div>
+  <div id="title"><div class="l1" id="t1">ورا الطلبية…</div><div class="l2" id="t2">شنو كيبقى؟</div></div>
+  <div class="chip" id="c1a" style="top:150px">كازا · أرشيف · <b>© Mustapha Razi / Le Desk</b></div>
+  <div class="chip" id="c1b" style="top:150px;opacity:0">مراكش 2011 · أرشيف · <b>Bernhard Holub · CC BY-SA 4.0</b></div>
+</div>
+
+<!-- S2 receipt -->
+<div class="scene" id="s2">
+  <div id="stripes"></div>
+  <div id="big115"><span class="n" id="n115">0</span> <small>DH</small></div>
+  <div id="big115cap">شحال كيخلّص الكليان فهاد المثال</div>
+  <div id="receipt">
+    <div class="hd"><span>الطلبية #115</span><em>محاكاة</em></div>
+    <div class="row" id="r1"><span class="lb"><i class="sw" style="background:#E8A93A"></i>الماكلة</span><span class="n">100 DH</span></div>
+    <div class="row" id="r2"><span class="lb"><i class="sw" style="background:var(--g)"></i>التوصيل</span><span class="n">10 DH</span></div>
+    <div class="row" id="r3"><span class="lb"><i class="sw" style="background:var(--g)"></i>الخدمة</span><span class="n">5 DH</span></div>
+    <div class="row" id="rtot"><span>المجموع</span><span class="n">115 DH</span></div>
+  </div>
+</div>
+
+<!-- S3 restaurant -->
+<div class="scene" id="s3">
+  <div class="bg" id="s3bg" style="background-image:url(img/P04_cuisine_Marrakech_2011.jpg)"></div>
+  <div class="shade" style="background:linear-gradient(180deg,rgba(13,26,23,.35),rgba(13,26,23,.85) 45%,rgba(13,26,23,.95))"></div>
+  <div class="chip">مراكش 2011 · أرشيف · <b>Bernhard Holub · CC BY-SA 4.0</b></div>
+  <div class="panel" id="p3" style="top:520px">
+    <div class="ph"><span class="ico"><svg width="54" height="54" viewBox="0 0 64 64"><path d="M10 30h44M14 30c0-10 8-18 18-18s18 8 18 18M32 12V6M12 38h40l-4 16H16z" fill="none" stroke="#0D1A17" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/></svg></span>المطعم <span style="font-size:40px;opacity:.6;font-weight:700">· بيع <span class="n">100 DH</span></span></div>
+    <div class="bar" id="bar3"></div>
+    <div class="lines">
+      <div class="ln" id="l3a"><span>عمولة مفترضة <span class="n">25%</span></span><span class="v minus n">−25</span></div>
+      <div class="ln" id="l3b"><span>المكونات</span><span class="v minus n">−35</span></div>
+      <div class="ln" id="l3c"><span>التغليف</span><span class="v minus n">−5</span></div>
+      <div class="ln" id="l3d"><span>الخدامة والطاقة</span><span class="v minus n">−15</span></div>
+      <div class="ln" id="l3e"><span>الكراء ومصاريف ثابتة</span><span class="v minus n">−10</span></div>
+    </div>
+    <div class="res" id="res3"><div><div class="k">بقاو</div><div class="note">قبل الضرائب</div></div><div class="big"><span class="n" id="n3">75</span> <small>DH</small></div></div>
+  </div>
+</div>
+
+<!-- S4 rider -->
+<div class="scene" id="s4">
+  <div class="bg" id="s4bg" style="background-image:url(img/P01_Casablanca_LeDesk.jpg)"></div>
+  <div class="shade" style="background:linear-gradient(180deg,rgba(13,26,23,.7),rgba(13,26,23,.88) 40%,rgba(13,26,23,.96))"></div>
+  <svg id="route" viewBox="0 0 1080 420">
+    <path id="rpath" d="M120 330 C 300 330, 300 120, 520 150 S 760 330, 960 110" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="16" stroke-linecap="round" stroke-dasharray="2 28"/>
+    <path id="rpath2" d="M120 330 C 300 330, 300 120, 520 150 S 760 330, 960 110" fill="none" stroke="#FFC244" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="120" cy="330" r="26" fill="#00A082"/><circle cx="960" cy="110" r="26" fill="#FFC244"/>
+    <text x="120" y="398" fill="#fff" font-size="30" font-weight="700" text-anchor="middle" font-family="Cairo">المطعم</text>
+    <text x="960" y="60" fill="#fff" font-size="30" font-weight="700" text-anchor="middle" font-family="Cairo">الكليان</text>
+    <g id="moto"><circle r="44" fill="#FFC244"/><g transform="translate(-26,-26) scale(.82)"><circle cx="16" cy="46" r="8" fill="none" stroke="#0D1A17" stroke-width="5"/><circle cx="50" cy="46" r="8" fill="none" stroke="#0D1A17" stroke-width="5"/><path d="M16 46h20l8-18h-10M44 28l6 18M8 30h18v-12H8z" fill="none" stroke="#0D1A17" stroke-width="5" stroke-linejoin="round"/></g></g>
+  </svg>
+  <div class="panel" id="p4" style="top:760px">
+    <div class="ph"><span class="ico"><svg width="54" height="54" viewBox="0 0 64 64"><circle cx="32" cy="22" r="12" fill="none" stroke="#0D1A17" stroke-width="5"/><path d="M12 58c2-12 10-18 20-18s18 6 20 18" fill="none" stroke="#0D1A17" stroke-width="5" stroke-linecap="round"/></svg></span>الليفريور</div>
+    <div class="lines" style="margin-top:26px">
+      <div class="ln" id="l4a"><span>خلصة مفترضة على الكورسة</span><span class="v n" style="color:var(--g)">+12</span></div>
+      <div class="ln" id="l4b"><span>البنزين</span><span class="v minus n">−3</span></div>
+      <div class="ln" id="l4c"><span>صيانة الموطور</span><span class="v minus n">−2</span></div>
+    </div>
+    <div class="res" id="res4"><div><div class="k">بقاو</div><div class="note">قبل مصاريف أخرى</div></div><div class="big"><span class="n" id="n4">12</span> <small>DH</small></div></div>
+    <div id="wait" style="margin-top:22px;display:flex;align-items:center;gap:24px;font-size:42px;font-weight:900;color:var(--y)">
+      <svg width="80" height="80" viewBox="0 0 64 64"><circle cx="32" cy="34" r="24" fill="none" stroke="#FFC244" stroke-width="5"/><path d="M26 6h12M32 10v4" stroke="#FFC244" stroke-width="5" stroke-linecap="round"/><path id="hand" d="M32 34V18" stroke="#FFC244" stroke-width="5" stroke-linecap="round"/></svg>
+      <span>والانتظار… حتى هو من وقتو</span></div>
+  </div>
+  <div class="chip">كازا · أرشيف · <b>© Mustapha Razi / Le Desk</b></div>
+</div>
+
+<!-- S5 platform -->
+<div class="scene" id="s5">
+  <div class="bg" id="s5bg" style="background-image:url(img/Glovo_Rider_-_Gran_Via_-_Madrid_03.jpg)"></div>
+  <div class="shade" style="background:rgba(13,26,23,.82)"></div>
+  <div id="phone"><div class="scr"></div><div class="notch"></div>
+    <div id="ptitle">التطبيق</div><div id="pcap">منصة توصيل · مثال عام</div>
+    <div id="pnum"><span class="n" id="n5">0</span></div><div id="pdh">درهم</div></div>
+  <div class="fly" id="f1">عمولة <span class="n">25</span></div>
+  <div class="fly" id="f2" style="background:#7fe0c9">توصيل <span class="n">10</span></div>
+  <div class="fly" id="f3" style="background:#bfeee2">خدمة <span class="n">5</span></div>
+  <div class="fly" id="f4" style="background:var(--red);color:#fff">للليفريور <span class="n">−12</span></div>
+  <div id="stamp"><div>ماشي ربح صافي</div></div>
+  <div id="stampnote">مداخيل متبقية قبل مصاريف المنصة: التقنية، الخدامة، الأداء، التسويق، التأمين…</div>
+  <div class="chip">مدريد، إسبانيا · أرشيف · <b>Javier Perez Montes · CC BY-SA 4.0</b></div>
+</div>
+
+<!-- S6 recap + final -->
+<div class="scene" id="s6">
+  <div id="recap">
+    <div class="h">فين مشات <span class="n">115</span> درهم؟</div>
+    <div id="rbar">
+      <div class="rb" id="rb1" style="background:var(--y);height:390px"><div><div class="k">المطعم</div><div class="after">من بعد المصاريف: بقاو <span class="n">10</span></div></div><div class="v n">75</div></div>
+      <div class="rb" id="rb2" style="background:#fff;height:90px"><div style="display:flex;gap:20px;align-items:baseline"><div class="k" style="font-size:42px">الليفريور</div><div class="after">بقاو <span class="n">7</span></div></div><div class="v n" style="font-size:60px">12</div></div>
+      <div class="rb" id="rb3" style="background:var(--g);height:150px;color:#fff"><div><div class="k">المنصة</div><div class="after" style="opacity:.9">قبل باقي مصاريفها</div></div><div class="v n">28</div></div>
+    </div>
+    <div id="rnote" style="margin-top:46px;text-align:center;font-size:44px;font-weight:700;line-height:1.5">العمولة كتتحسب على <span style="color:var(--y)">البيع</span>…<br>ماشي على <span style="color:var(--y)">الربح</span> ديال المطعم</div>
+  </div>
+  <div id="final">
+    <div class="half" style="top:0"><div class="bg" id="fa" style="background-image:url(img/P04_cuisine_Marrakech_2011.jpg)"></div></div>
+    <div class="half" style="top:960px"><div class="bg" id="fb" style="background-image:url(img/P01_Casablanca_LeDesk.jpg)"></div></div>
+    <div class="shade" style="background:rgba(13,26,23,.45)"></div>
+    <div class="abs" style="top:952px;left:0;right:0;height:16px;background:var(--y)"></div>
+    <div id="fmsg"><div>اللي كيطيب واللي كيوصل…<br>يستافدو حتى هما</div></div>
+  </div>
+  <div id="endc">
+    <h3>محاكاة · مثال افتراضي</h3>
+    <p>الأرقام مختارة باش نفهمو الميكانيزم، ماشي فاتورة حقيقية ولا معدل وطني. <span class="n">28</span> ماشي ربح صافي.</p>
+    <p>المصادر: <img src="img/Glovo_logo.png" style="height:46px;vertical-align:middle;background:#000;border-radius:8px;padding:4px 10px"> المغرب (شروط الشركاء · Rider Hub) · ريبورتاج Le Desk</p>
+    <p class="ltr" style="margin-top:30px">Photos : Mustapha Razi / Le Desk (Casablanca) · Bernhard Holub, CC BY-SA 4.0 (Marrakech 2011) · Javier Perez Montes, CC BY-SA 4.0 (Madrid, archive). Les personnes photographiées ne sont pas celles de la simulation.</p>
+  </div>
+</div>
+
+<div id="band"><span class="dot"></span>مثال افتراضي — قبل الضرائب؛ الأرقام كتختلف</div>
+<div id="tag"></div>
+<div id="prog"></div>
+<div id="sub"><span id="subt"></span></div>
+<div id="swipe2"></div><div id="swipe"></div>
+<svg id="grain" width="1080" height="1920"><filter id="nz"><feTurbulence id="turb" type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="1"/></filter><rect width="100%" height="100%" filter="url(#nz)"/></svg>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const io=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eo=x=>1-Math.pow(1-x,3);
+const bk=x=>{const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const P=(t,a,d)=>cl((t-a)/d);
+const lerp=(a,b,p)=>a+(b-a)*p;
+// entrance/exit helper
+function show(el,t,t0,t1=1e9,mode='up',d=.5){
+  if(typeof el==='string')el=$(el);
+  const p=P(t,t0,d), q=P(t,t1,.35);
+  const o=(mode==='pop'?cl(p*3):eo(p))*(1-q);
+  el.style.opacity=o;
+  let tr='';
+  if(mode==='up')tr=`translateY(${(1-eo(p))*70}px)`;
+  else if(mode==='pop')tr=`scale(${lerp(.4,1,bk(p))})`;
+  else if(mode==='right')tr=`translateX(${(1-eo(p))*-120}px)`;
+  else if(mode==='left')tr=`translateX(${(1-eo(p))*120}px)`;
+  el.style.transform=tr+(q>0?` scale(${1-q*.08})`:'');
+}
+const SUBS=[
+ [0,2.2,'كتضغط، الماكلة كتجي.'],[2.2,4.6,'ولكن المطعم والليفريور يقدرو يخدمو بزاف…'],[4.6,6,'ويبقى ليهم قليل.'],
+ [6,9,'نتبعو 115 درهم فمثال افتراضي:'],[9,13,'مية ماكلة، وعشرة توصيل، وخمسة خدمة.'],
+ [13,17,'بعمولة مفترضة 25 فالمية، المطعم كيتوصل بـ75.'],[17,22,'ينقص 65 للمكونات والتغليف ونصيب الخدامة والكراء…'],[22,25,'بقاو عشرة.'],
+ [25,27.5,'الليفريور نفترضو خدا 12.'],[27.5,30,'ينقص خمسة لمصاريف الموطور…'],[30,33,'بقاو سبعة، قبل مصاريف أخرى.'],[33,36,'والانتظار حتى هو من وقتو.'],
+ [36,38.5,'التطبيق جمع 40،'],[38.5,41,'خلّص منها 12 لليفرور.'],[41,44,'بقاو 28 قبل باقي مصاريفو.'],[44,47,'هادي مداخيل متبقية، ماشي ربح صافي.'],
+ [47,49.5,'العمولة كتتحسب على البيع،'],[49.5,53,'والمطعم كيدبّر الهامش، والليفريور كيدبّر الطريق.'],[53,56.3,'نجاح التطبيق خاصو يوصل حتى للي كيطيب…'],[56.3,57.4,'واللي كيوصل.']
+];
+const SC=[0,6,13,25,36,47,59];
+const TAGS=['', 'الطلبية','1 · المطعم','2 · الليفريور','3 · المنصة','الحساب'];
+// restaurant bar segments (value units of 100 -> width %)
+const SEG3=[['c',25,'#00A082','25%'],['a',35,'#8a9a96','مكونات'],['b',5,'#a9b6b2',''],['d',15,'#c4cdca','خدامة'],['e',10,'#dfe5e3','كراء'],['r',10,'#FFC244','10']];
+(function(){const bar=$('bar3');let x=0;for(const[k,v,c,l] of SEG3){const s=document.createElement('div');s.className='seg';s.id='sg'+k;s.style.right=x+'%';s.style.width=v+'%';s.style.background=c;s.textContent=l;if(k==='c')s.style.color='#fff';bar.appendChild(s);x+=v;}})();
+const rp=$('rpath2');const RL=rp.getTotalLength();rp.style.strokeDasharray=RL;
+
+function kb(el,t,a,b,s0=1.08,s1=1.2,dx=0,dy=0){const p=P(t,a,b-a);$(el).style.transform=`scale(${lerp(s0,s1,p)}) translate(${dx*p}px,${dy*p}px)`}
+
+function render(t){
+  // scene visibility (switch under the swipe)
+  for(let i=0;i<6;i++){$('s'+(i+1)).style.opacity=(t>=SC[i]&&t<SC[i+1]+(i==5?1:0))?1:0}
+  // swipes at boundaries
+  let sw=200,sw2=200;
+  for(const b of SC.slice(1,6)){const p=P(t,b-.35,.7);if(p>0&&p<1){sw=lerp(110,-170,io(p));sw2=lerp(125,-155,io(cl(p*1.0-.06)));}}
+  $('swipe').style.transform=`skewX(-14deg) translateX(${sw}%)`;$('swipe2').style.transform=`skewX(-14deg) translateX(${sw2}%)`;
+  $('prog').style.width=(t/59*100)+'%';
+  $('turb').setAttribute('seed',Math.floor(t*12)%50);
+  // bandeau 6-47
+  const bo=P(t,6.2,.4)*(1-P(t,47,.3));$('band').style.opacity=bo;$('band').style.transform=`translateX(-50%) translateY(${(1-eo(P(t,6.2,.4)))*-40}px)`;
+  // tag
+  let si=SC.findIndex((b,i)=>t>=b&&t<SC[i+1]);const tg=TAGS[si]||'';$('tag').textContent=tg;
+  $('tag').style.opacity=(si>=2&&si<=4)?P(t,SC[si]+.3,.3):0;
+  // subtitles
+  const s=SUBS.find(x=>t>=x[0]&&t<x[1]);const se=$('subt');
+  if(s){se.textContent=s[2];const p=P(t,s[0],.18);se.parentElement.style.opacity=p;se.parentElement.style.transform=`translateY(${(1-p)*14}px)`}else{se.parentElement.style.opacity=0}
+  if(t>=57.4){se.parentElement.style.opacity=0}
+
+  // ---------- S1 ----------
+  if(t<6.6){
+    kb('s1a',t,0,3.4,1.15,1.28,-20,-30);kb('s1b',t,3.0,6.2,1.08,1.2,20,10);
+    $('s1b').style.opacity=io(P(t,3.0,.5));
+    $('c1a').style.opacity=1-P(t,3.0,.3);$('c1b').style.opacity=P(t,3.3,.3);
+    show('notif',t,.25,3.1,'pop',.45);
+    const tp=P(t,.15,.6);$('tap').style.opacity=(1-tp)*(tp>0?1:0);$('tap').style.transform=`scale(${lerp(.3,1.6,eo(tp))})`;
+    show('t1',t,.9,9,'up',.5);
+    const p2=P(t,1.6,.5);$('t2').style.opacity=cl(p2*3);$('t2').style.transform=`scale(${lerp(.3,1,bk(p2))}) rotate(${lerp(-8,-2,eo(p2))}deg)`;
+    $('title').style.transform=`translateY(${lerp(0,-40,P(t,3,3))}px)`;
+  }
+  // ---------- S2 ----------
+  if(t>=5.5&&t<13.6){
+    $('stripes').style.transform=`translate(${(t*40)%113}px,0)`;
+    const p=P(t,6.3,1.6);$('n115').textContent=Math.round(115*eo(p));
+    show('big115',t,6.1,99,'pop',.5);show('big115cap',t,6.6,99,'up');
+    show('receipt',t,7.2,99,'up',.6);
+    show('r1',t,9.1,99,'right',.4);show('r2',t,10.3,99,'right',.4);show('r3',t,11.4,99,'right',.4);show('rtot',t,12.0,99,'pop',.4);
+    $('receipt').style.transform+=` rotate(${lerp(-3,-1,P(t,7.2,6))}deg)`;
+  }
+  // ---------- S3 ----------
+  if(t>=12.5&&t<25.6){
+    kb('s3bg',t,13,25,1.1,1.25,0,-40);
+    show('p3',t,13.2,99,'up',.6);
+    // segments: commission at 14.5, costs 17.2..20.6, rest 21.8
+    const st={c:14.6,a:17.4,b:18.4,d:19.3,e:20.2,r:21.8};
+    for(const[k] of SEG3){const e=$('sg'+k),p=eo(P(t,st[k],.45));e.style.transform=`scaleY(${k==='r'?1+.15*Math.sin(P(t,22.2,3)*Math.PI*4)*(t>22.2?1:0):1})`;e.style.opacity=k==='r'?(t<21.8?.35:1):lerp(.0,1,p);e.style.clipPath=`inset(0 0 0 ${(1-p)*100}%)`;
+      if(k==='r'&&t<21.8){e.style.clipPath='none';}}
+    show('l3a',t,14.6,99,'right',.4);show('l3b',t,17.4,99,'right',.35);show('l3c',t,18.4,99,'right',.35);show('l3d',t,19.3,99,'right',.35);show('l3e',t,20.2,99,'right',.35);
+    show('res3',t,15.6,99,'up',.4);
+    let v=100;v-=25*eo(P(t,14.8,.8));v-=65*eo(P(t,17.4,3.6));$('n3').textContent=Math.round(v);
+    const pr=P(t,21.8,.5);$('n3').parentElement.style.transform=`scale(${1+.25*Math.sin(pr*Math.PI)})`;
+  }
+  // ---------- S4 ----------
+  if(t>=24.5&&t<36.6){
+    kb('s4bg',t,25,36,1.15,1.3,30,0);
+    const rp2=eo(P(t,25.2,4.5));rp.style.strokeDashoffset=RL*(1-rp2);
+    const pt=rp.getPointAtLength(RL*rp2);$('moto').setAttribute('transform',`translate(${pt.x},${pt.y}) scale(${1+.06*Math.sin(t*12)})`);
+    $('route').style.opacity=eo(P(t,25.1,.4));
+    show('p4',t,25.5,99,'up',.6);
+    show('l4a',t,26.0,99,'right',.4);show('l4b',t,28.0,99,'right',.35);show('l4c',t,28.8,99,'right',.35);
+    show('res4',t,26.4,99,'up',.4);
+    let v=12;v-=3*eo(P(t,28.0,.5));v-=2*eo(P(t,28.8,.5));$('n4').textContent=Math.round(v);
+    const pr=P(t,30.2,.5);$('n4').parentElement.style.transform=`scale(${1+.25*Math.sin(pr*Math.PI)})`;
+    show('wait',t,33.1,99,'pop',.45);
+    const a=(t-33)*360/1.5;$('hand').setAttribute('transform',`rotate(${a} 32 34)`);
+  }
+  // ---------- S5 ----------
+  if(t>=35.5&&t<47.6){
+    kb('s5bg',t,36,47,1.1,1.22,-30,0);
+    show('phone',t,36.1,99,'up',.6);
+    const fl=(id,t0,x0,y0,x1,y1)=>{const e=$(id),p=io(P(t,t0,.9));e.style.left=lerp(x0,x1,p)+'px';e.style.top=lerp(y0,y1,p)+'px';e.style.opacity=cl(P(t,t0-.1,.2))*(1-P(t,t0+.8,.15));e.style.transform=`scale(${lerp(1,.5,p)})`};
+    fl('f1',36.4,60,1330,440,700);fl('f2',37.0,620,1420,460,700);fl('f3',37.5,380,1520,470,700);
+    const f4=$('f4'),p4=io(P(t,39.3,1.1));f4.style.left=lerp(440,640,p4)+'px';f4.style.top=lerp(700,1350,p4)+'px';f4.style.opacity=cl(P(t,39.2,.2))*(1-P(t,43.5,.3));f4.style.transform=`scale(${lerp(.6,1,p4)})`;
+    let v=0;v+=25*P(t,37.1,.3);v+=10*P(t,37.7,.3);v+=5*P(t,38.2,.3);v-=12*eo(P(t,39.6,.9));$('n5').textContent=Math.round(v);
+    const pr=P(t,41.0,.5);$('pnum').style.transform=`scale(${1+.18*Math.sin(pr*Math.PI)})`;
+    const ps=P(t,44.0,.45);$('stamp').style.opacity=cl(ps*4);$('stamp').style.transform=`scale(${lerp(2.2,1,eo(ps))}) rotate(-6deg)`;
+    show('stampnote',t,44.4,99,'up',.4);
+  }
+  // ---------- S6 ----------
+  if(t>=46.5){
+    const r=P(t,52.6,.6);
+    $('recap').style.opacity=1-r;
+    show($('recap').firstElementChild,t,47.2,99,'up',.5);
+    [['rb1',47.6],['rb2',48.2],['rb3',48.7]].forEach(([id,t0])=>{const e=$(id),p=eo(P(t,t0,.6));e.style.opacity=cl(p*2);e.style.transform=`scaleX(${lerp(.05,1,p)})`});
+    show('rnote',t,47.3,99,'up',.5);
+    document.querySelectorAll('.rb .after').forEach(e=>{e.style.opacity=.85*P(t,49.8,.5)});
+    $('final').style.opacity=io(r);
+    kb('fa',t,52.6,57.5,1.08,1.2,0,-30);kb('fb',t,52.6,57.5,1.2,1.08,0,20);
+    const pm=P(t,53.6,.6);$('fmsg').style.opacity=cl(pm*3);$('fmsg').style.transform=`scale(${lerp(.6,1,bk(pm))})`;
+    const pe=P(t,57.4,.5);$('endc').style.opacity=pe;$('endc').style.transform=`translateY(${(1-eo(pe))*60}px)`;
+  }
+}
+window.render=render;
+</script>
+</body></html>
