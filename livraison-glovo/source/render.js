@@ -16,11 +16,12 @@ const path = require('path');
       await page.screenshot({ path: `prev_${String(t).padStart(5, '0')}.jpg`, type: 'jpeg', quality: 80 });
     }
   } else {
-    const fps = Number(fpsArg || 30), dur = 59, n = Math.round(dur * fps);
+    const fps = Number(fpsArg || 30), W = require('./warp.json'), dur = W[W.length-1][0], n = Math.round(dur * fps);
+    const warp = T => { for (let i = 1; i < W.length; i++) if (T <= W[i][0]) { const [a, b] = W[i-1], [c, d] = W[i]; return b + (d - b) * (T - a) / (c - a); } return W[W.length-1][1]; };
     const ff = spawn('ffmpeg', ['-y', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-',
       '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', arg], { stdio: ['pipe', 'ignore', 'inherit'] });
     for (let f = 0; f < n; f++) {
-      await page.evaluate(t => render(t), f / fps);
+      await page.evaluate(t => render(t), warp(f / fps));
       const buf = await page.screenshot({ type: 'jpeg', quality: 93 });
       if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
       if (f % 150 === 0) console.error('frame', f, '/', n);

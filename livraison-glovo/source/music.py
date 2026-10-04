@@ -1,5 +1,13 @@
 import numpy as np, wave
-SR = 44100; DUR = 59.0; BPM = 100; beat = 60 / BPM
+import json
+W=json.load(open('warp.json'))
+def inv(o):
+    for i in range(1,len(W)):
+        if o<=W[i][1]:
+            (a,b),(c,d)=W[i-1],W[i]
+            return a+(c-a)*(o-b)/(d-b) if d>b else a
+    return W[-1][0]
+SR = 44100; DUR = W[-1][0]; BPM = 100; beat = 60 / BPM
 N = int(SR * DUR); t = np.arange(N) / SR
 mix = np.zeros(N); rng = np.random.default_rng(7)
 
@@ -58,11 +66,11 @@ for b in range(nbeats):
     if b % 4 == 0 or b % 4 == 3:
         for k, f in enumerate(chords[ch]): add(pluck(f), at + k * .06 + (beat / 2 if b % 4 == 3 else 0), .22)
 
-for s in (6, 13, 25, 36, 47): whoosh(s)
+for s in (6, 13, 25, 36, 47): whoosh(inv(s))
 for p, f in ((0.15, 1200), (8.0, 990), (12.0, 990), (14.7, 660), (21.8, 1320), (26.0, 990), (30.2, 1320),
              (37.1, 880), (37.7, 990), (38.2, 1100), (41.0, 1320), (53.6, 990)):
-    pop(p, f)
-add(kick() * 1.4, 44.0, 1.0)  # stamp thud
+    pop(inv(p), f)
+add(kick() * 1.4, inv(44.0), 1.0)  # stamp thud
 # fade in/out
 mix *= np.minimum(1, t / .3) * np.minimum(1, (DUR - t) / 2.0)
 mix /= np.max(np.abs(mix)) / .8

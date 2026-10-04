@@ -1,6 +1,7 @@
 # ورا الطلبية… شنو كيبقى — vidéo 59 s (9:16)
 
-- `LIVRAISON_59S_1080x1920.mp4` : version finale (motion design + musique, sous-titres darija incrustés).
+- `LIVRAISON_VOIX_1080x1920.mp4` : **version finale avec la voix off ElevenLabs v4** (62,5 s), animation recalée sur la voix, musique baissée sous la voix, son normalisé à -14 LUFS.
+- `LIVRAISON_59S_1080x1920.mp4` : première version sans voix (motion design + musique, sous-titres darija incrustés).
 - `LIVRAISON_59S_sans_musique.mp4` : même image, sans audio (pour poser la voix off).
 - `source/` : animation HTML/JS rendue image par image avec Playwright, puis encodée avec ffmpeg.
 
@@ -10,7 +11,7 @@
 cd source
 npm i playwright
 node render.js preview 3,15,45        # aperçus JPG
-node render.js video silent.mp4 30    # rendu complet
+node render.js video silent.mp4 30    # rendu complet, calé sur la voix via warp.json (temps voix -> temps animation)
 python3 music.py                      # musique -> music.wav (numpy)
 ffmpeg -i silent.mp4 -i music.wav -c:v copy -c:a aac -b:a 192k -shortest final.mp4
 ```
